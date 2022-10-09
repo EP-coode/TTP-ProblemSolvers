@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GneticAlghoritm.GA;
-
-internal interface IEvaluator
+namespace GneticAlghoritm.GA.Mutation
 {
-    public double Evaluate(Individual individual);
+    internal interface InverseMutation
+    {
+    }
 }
-

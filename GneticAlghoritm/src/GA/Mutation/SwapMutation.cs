@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GneticAlghoritm.src.GA
+namespace GneticAlghoritm.GA.Mutation
 {
-    internal interface ISelector
+    internal interface SwapMutation
     {
     }
 }

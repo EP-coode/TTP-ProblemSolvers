@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace GneticAlghoritm.GA;
 
-internal interface ISelectionStrategy
+internal interface ICrossingStrategy
 {
+    public Individual[] Cross(Individual parent1, Individual parent2);
 }
 

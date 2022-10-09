@@ -10,11 +10,13 @@ internal class Individual
 {
     public int[] Genome { get; }
 
-    public Individual(int[] dimensions)
+    public Individual(int[] genPool, bool shuffleGenome = true)
     {
-        Genome = new int[dimensions.Length];
-        Array.Copy(dimensions, Genome, dimensions.Length);
-        Shuffle(Genome);
+        Genome = new int[genPool.Length];
+        Array.Copy(genPool, Genome, genPool.Length);
+
+        if(shuffleGenome)
+            Shuffle(Genome);
     }
 
     public void Mutate(float mutationStrangthTreshold)

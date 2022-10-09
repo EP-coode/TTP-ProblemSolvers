@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GneticAlghoritm.GA
+namespace GneticAlghoritm.GA;
+
+internal interface IEvaluator
 {
-    internal interface IGenome
-    {
-    }
+    public double Evaluate(Individual individual);
 }
+

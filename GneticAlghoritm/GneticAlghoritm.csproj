@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Folder Include="lab1\wykresy\" />
+    <Folder Include="src\TSP\" />
   </ItemGroup>
 
 </Project>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GneticAlghoritm.GA;
 
-internal class Individual
+public class Individual
 {
     public int[] Genome { get; }
 

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GneticAlghoritm.GA;
+namespace GneticAlghoritm.Logger;
 
-internal interface IStopPredicate
+public interface ILogger
 {
-    public bool MustStop(GeneticAlghoritm ga);
+    void Log(string data);
 }
 

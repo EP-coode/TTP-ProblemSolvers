@@ -8,8 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="lab1\wykresy\" />
-    <Folder Include="src\TSP\" />
+    <Compile Remove="lab1\wykresy\**" />
+    <EmbeddedResource Remove="lab1\wykresy\**" />
+    <None Remove="lab1\wykresy\**" />
   </ItemGroup>
 
 </Project>

@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using GneticAlghoritm.GA;
 
-namespace GneticAlghoritm.src.GA.Mutation;
+namespace GneticAlghoritm.GA.Selection;
 
-internal interface IMutationStrategy
+public interface ISelector
 {
-    public void Mutate(Individual individual);
+    public Individual SelectParent(Individual[] population);
 }
 

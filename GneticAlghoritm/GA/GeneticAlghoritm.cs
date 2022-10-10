@@ -1,8 +1,8 @@
 ﻿using GneticAlghoritm.Logger;
-using GneticAlghoritm.src.GA;
-using GneticAlghoritm.src.GA.Evaluation;
-using GneticAlghoritm.src.GA.Mutation;
-using GneticAlghoritm.src.GA.Selection;
+using GneticAlghoritm.GA;
+using GneticAlghoritm.GA.Evaluation;
+using GneticAlghoritm.GA.Mutation;
+using GneticAlghoritm.GA.Selection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,17 +11,19 @@ using System.Threading.Tasks;
 
 namespace GneticAlghoritm.GA;
 
-internal class GeneticAlghoritm
+public class GeneticAlghoritm
 {
     public Individual[] Population { get; private set; }
     private int[] genPool;
     private double mutationFrequencyTreshold;
-    private ICrossingStrategy crossingStrategy { get; init; }
-    private IMutationStrategy mutationStrategy { get; init; }
-    private ISelector parentSelector { get; init; }
-    private ILogger logger { get; init; }
-    private IStopPredicate[] StopPredicates { get; init; }
-    private IEvaluator evaluator { get; }
+    private IEnumerable<int> enumerable;
+
+    public ICrossingStrategy crossingStrategy { get; init; }
+    public IMutationStrategy mutationStrategy { get; init; }
+    public ISelector parentSelector { get; init; }
+    public ILogger logger { get; init; }
+    public IStopPredicate[] StopPredicates { get; init; }
+    public IEvaluator evaluator { get; init; }
 
     public GeneticAlghoritm(int[] populationGenes, double mutationFrequencyTreshold, IEvaluator evaluator)
     {

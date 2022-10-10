@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using GneticAlghoritm.GA;
 
-namespace GneticAlghoritm.src.GA.Selection;
+namespace GneticAlghoritm.GA.Evaluation;
 
-internal interface ISelector
+public interface IEvaluator
 {
-    public Individual SelectParent(Individual[] population);
+    public double Evaluate(Individual individual);
 }
 

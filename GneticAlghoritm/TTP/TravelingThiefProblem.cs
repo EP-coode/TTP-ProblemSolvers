@@ -30,19 +30,20 @@ public record Item
     public int AssignedNodeIndex { get; init; }
 };
 
-public record Node
+public record City
 {
     public int Index { get; init; }
     public float X { get; init; }
     public float Y { get; init; }
+    public Item[] Items { get; init; }
 };
 
-class TravellingThiefProblemLoader
+public class TravelingThiefProblem
 {
     private static Regex metaDataValueFinder = new Regex(@"(.*):\s*(.+)");
     public ProblemMetaData ProblemMetaData { get; set; }
-    private Node[] cities;
-    private Item[] items;
+    public City[] Cities { get; set; }
+    public Item[] Items { get; set; }
 
     public void LoadFromFile(string fileSrc, int metadataHeaderLines = 9)
     {
@@ -53,18 +54,29 @@ class TravellingThiefProblemLoader
         int firstCityLine = metadataHeaderLines + 1;
         int lastCityline = firstCityLine + ProblemMetaData.DIMENSION;
 
-        cities = ParseNodes(lines[firstCityLine..lastCityline]);
-
         int firstItemLine = lastCityline + 1;
         int lastItemline = firstItemLine + ProblemMetaData.NUMBER_OF_ITEMS;
 
-        items = ParseItems(lines[firstItemLine..lastItemline]);
+        Items = ParseItems(lines[firstItemLine..lastItemline]);
+        Cities = ParseNodes(lines[firstCityLine..lastCityline], Items);
 
     }
 
-    private Node[] ParseNodes(string[] rawNodesData)
+    public int[] GetGens()
     {
-        Node[] nodes = new Node[rawNodesData.Length];
+        return Enumerable.Range(0, Cities.Length).ToArray();
+    }
+
+    public double GetCitiesDistnce(int cityIndex1, int cityIndex2)
+    {
+        City city1 = Cities[cityIndex1];
+        City city2 = Cities[cityIndex2];
+        return Math.Abs(city1.X - city2.X) + Math.Abs(city1.Y + city2.Y);
+    }
+
+    private City[] ParseNodes(string[] rawNodesData, Item[] items)
+    {
+        City[] nodes = new City[rawNodesData.Length];
         char[] whitespaces = new[] { ' ', '\t' };
 
         for (int i = 0; i < rawNodesData.Length; i++)
@@ -74,12 +86,15 @@ class TravellingThiefProblemLoader
                 .Replace('.', ',')
                 .Split(whitespaces);
 
+            var nodeItems = items.Where(item => item.AssignedNodeIndex - 1 == i).ToArray();
+
             // TODO: add int float parsing error handling
-            nodes[i] = new Node
+            nodes[i] = new City
             {
                 Index = int.Parse(data[0]) - 1,
                 X = float.Parse(data[1]),
                 Y = float.Parse(data[2]),
+                Items = nodeItems
             };
 
         }

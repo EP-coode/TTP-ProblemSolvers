@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using GneticAlghoritm.GA;
 
-namespace GneticAlghoritm.src.GA.Evaluation;
+namespace GneticAlghoritm.GA.Mutation;
 
-internal interface IEvaluator
+public interface IMutationStrategy
 {
-    public double Evaluate(Individual individual);
+    public void Mutate(Individual individual);
 }
 

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace GneticAlghoritm.GA;
 
-internal interface ICrossingStrategy
+public interface IStopPredicate
 {
-    public Individual[] Cross(Individual parent1, Individual parent2);
+    public bool MustStop(GeneticAlghoritm ga);
 }
 

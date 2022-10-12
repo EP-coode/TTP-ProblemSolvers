@@ -1,18 +1,28 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using GneticAlghoritm.GA;
-using GneticAlghoritm.GA.Evaluation;
-using GneticAlghoritm.ProblemLoader;
+using GeneticAlghoritm.GA;
+using GeneticAlghoritm.GA.Evaluation;
+using GeneticAlghoritm.ProblemLoader;
+using GeneticAlghoritm.Logger;
 
-var loader = new TravelingThiefProblem();
+var problem = new TravelingThiefProblem();
+problem.LoadFromFile(".\\lab1\\dane\\easy_0.ttp");
 
-loader.LoadFromFile("C:\\Users\\epenl\\Desktop\\GitHub\\TTP-GA\\GneticAlghoritm\\lab1\\dane\\easy_0.ttp");
+var itemsSelector = new GreedyItemsSelector();
+IEvaluator evaluator = new TTPEvaluator(problem, itemsSelector);
+CsvFileLogger logger = new CsvFileLogger();
+var desktopLocation = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+logger.SetFileDest(Path.Combine(desktopLocation, "random_1.csv"), new string[] { "min", "max", "avg" });
 
-IEvaluator evaluator = new TTPEvaluator();
+int[] avalibleGens = problem.GetGens();
 
-var gaSolver = new GeneticAlghoritm(loader.GetGens(), 0.1, evaluator)
+ProblemSlover randomSolver = new RandomSolver(avalibleGens, evaluator)
 {
-   evaluator = evaluator,
+    logger = logger,
 };
+
+randomSolver.Run(100);
+
+logger.Flush();
 
 Console.WriteLine("HELLO");

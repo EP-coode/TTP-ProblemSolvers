@@ -3,31 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GneticAlghoritm.ProblemLoader;
+using GeneticAlghoritm.ProblemLoader;
 
-namespace GneticAlghoritm.GA.Evaluation;
+namespace GeneticAlghoritm.GA.Evaluation;
 
 internal class TTPEvaluator : IEvaluator
 {
-    public TravelingThiefProblem ttp { get; init; }
-    public IItemsSelector itemsSelector { get; init; }
+    private TravelingThiefProblem Ttp { get; init; }
+    public IItemsSelector ItemsSelector { get; init; }
+
+    public TTPEvaluator(TravelingThiefProblem ttp, IItemsSelector itemsSelector)
+    {
+        Ttp = ttp;
+        ItemsSelector = itemsSelector;
+    }
 
     public double Evaluate(Individual individual)
     {
-        var selectedItems = itemsSelector.SelectItems(individual, ttp);
+        var selectedItems = ItemsSelector.SelectItems(individual, Ttp);
         double totalItemsValue = selectedItems
             .Select(kvp => kvp.Value)
             .Sum(items => items.Sum(item => item.Profit));
         double travelCost = 0;
         double currentKnapSackWeight = 0;
 
-        for (int i = 1; i < ttp.Cities.Length; i++)
+        for (int i = 1; i < Ttp.Cities.Length; i++)
         {
-            City srcCity = ttp.Cities[i - 1];
-            City dstCity = ttp.Cities[i];
-            currentKnapSackWeight += selectedItems[srcCity].Sum(item => item.Weight);
+            City srcCity = Ttp.Cities[i - 1];
+            City dstCity = Ttp.Cities[i];
+            double distance = Ttp.GetCitiesDistnce(i - 1, i);
+
+            if (selectedItems.ContainsKey(srcCity))
+            {
+                currentKnapSackWeight += selectedItems[srcCity].Sum(item => item.Weight);
+            }
+
             double travelSpeed = GetTravelSpeed(currentKnapSackWeight);
-            double distance = ttp.GetCitiesDistnce(i - 1, i);
             double travelTime = distance / travelSpeed;
             travelCost += travelTime;
         }
@@ -37,9 +48,9 @@ internal class TTPEvaluator : IEvaluator
 
     private double GetTravelSpeed(double currentKnapsackWeight)
     {
-        return ttp.ProblemMetaData.MAX_SPEED -
-            ((ttp.ProblemMetaData.MAX_SPEED - ttp.ProblemMetaData.MIN_SPEED) * currentKnapsackWeight)
-                / ttp.ProblemMetaData.CAPACITY_OF_KNAPSACK;
+        return Ttp.ProblemMetaData.MAX_SPEED -
+            ((Ttp.ProblemMetaData.MAX_SPEED - Ttp.ProblemMetaData.MIN_SPEED)
+            * currentKnapsackWeight) / Ttp.ProblemMetaData.CAPACITY_OF_KNAPSACK;
     }
 
 

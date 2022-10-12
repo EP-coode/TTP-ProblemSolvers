@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GneticAlghoritm.Logger;
+namespace GeneticAlghoritm.Logger;
 
 public interface ILogger
 {
-    void Log(string data);
+    void Log(string[] data);
 }
 

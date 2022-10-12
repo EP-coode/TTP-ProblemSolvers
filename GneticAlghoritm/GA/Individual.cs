@@ -4,19 +4,57 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GneticAlghoritm.GA;
+using GeneticAlghoritm.GA.Evaluation;
+
+namespace GeneticAlghoritm.GA;
 
 public class Individual
 {
     public int[] Genome { get; }
+    private double? _value;
+    public double? Value
+    {
+        get
+        {
+            if (_value is null)
+            {
+                double evaluation = Evaluator.Evaluate(this);
+                _value = evaluation;
+                return _value;
+            }
 
-    public Individual(int[] genPool, bool shuffleGenome = true)
+            return _value;
+
+        }
+        private set { _value = value; }
+    }
+
+    private IEvaluator _evaluator;
+    public IEvaluator Evaluator
+    {
+        get { return _evaluator; }
+        set
+        {
+            _evaluator = value;
+            Value = null;
+        }
+    }
+
+    public Individual(int[] genPool, IEvaluator evaluator, bool shuffleGenome = true)
     {
         Genome = new int[genPool.Length];
         Array.Copy(genPool, Genome, genPool.Length);
+        Evaluator = evaluator;
 
-        if(shuffleGenome)
+        if (shuffleGenome)
             Shuffle(Genome);
+    }
+
+    public Individual(Individual individual)
+    {
+        Genome = new int[individual.Genome.Length];
+        Evaluator = individual.Evaluator;
+        Array.Copy(individual.Genome, Genome, individual.Genome.Length);
     }
 
     public void Mutate(float mutationStrangthTreshold)
@@ -34,6 +72,11 @@ public class Individual
         }
     }
 
+    public void Randomize()
+    {
+        Shuffle(Genome);
+    }
+
     private void Shuffle(int[] array)
     {
         Random rand = new Random();
@@ -43,6 +86,7 @@ public class Individual
             int indexToSwap = (rand.Next(0, array.Length - 1) + i) % array.Length;
             Swap(i, indexToSwap, array);
         }
+        Value = null;
     }
 
     private void Swap(int x, int y, int[] array)

@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace GneticAlghoritm.ProblemLoader;
+namespace GeneticAlghoritm.ProblemLoader;
 
 public record ProblemMetaData
 {

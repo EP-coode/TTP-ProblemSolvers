@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GneticAlghoritm.GA;
+using GeneticAlghoritm.GA;
 
-namespace GneticAlghoritm.GA.Evaluation;
+namespace GeneticAlghoritm.GA.Evaluation;
 
 public interface IEvaluator
 {

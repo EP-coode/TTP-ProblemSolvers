@@ -1,49 +1,30 @@
-﻿using GneticAlghoritm.Logger;
-using GneticAlghoritm.GA;
-using GneticAlghoritm.GA.Evaluation;
-using GneticAlghoritm.GA.Mutation;
-using GneticAlghoritm.GA.Selection;
+﻿using GeneticAlghoritm.Logger;
+using GeneticAlghoritm.GA;
+using GeneticAlghoritm.GA.Evaluation;
+using GeneticAlghoritm.GA.Mutation;
+using GeneticAlghoritm.GA.Selection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GneticAlghoritm.GA;
+namespace GeneticAlghoritm.GA;
 
-public class GeneticAlghoritm
+public class GeneticAlghoritm : ProblemSlover
 {
-    public Individual[] Population { get; private set; }
-    private int[] genPool;
     private double mutationFrequencyTreshold;
-    private IEnumerable<int> enumerable;
-
     public ICrossingStrategy crossingStrategy { get; init; }
     public IMutationStrategy mutationStrategy { get; init; }
     public ISelector parentSelector { get; init; }
-    public ILogger logger { get; init; }
-    public IStopPredicate[] StopPredicates { get; init; }
-    public IEvaluator evaluator { get; init; }
 
-    public GeneticAlghoritm(int[] populationGenes, double mutationFrequencyTreshold, IEvaluator evaluator)
+    public GeneticAlghoritm(int[] populationGenes, double mutationFrequencyTreshold, IEvaluator evaluator) 
+        : base(populationGenes, evaluator)
     {
-        genPool = populationGenes;
-        GenRandomPopulation();
-        this.evaluator = evaluator;
         this.mutationFrequencyTreshold = mutationFrequencyTreshold;
     }
 
-    public void GenRandomPopulation()
-    {
-        Population = new Individual[genPool.Length];
-
-        for (int i = 0; i < Population.Length; i++)
-        {
-            Population[i] = new Individual(genPool);
-        }
-    }
-
-    public void Run(int generations)
+    public override void Run(int generations)
     {
         Random r = new Random();
 
@@ -81,26 +62,9 @@ public class GeneticAlghoritm
 
             Population = nextGeneration;
 
-            logStats();
+            SaveStatsToLog();
         }
     }
 
-    private void logStats()
-    {
-        var (max, min, avg) = GetPopulationStats();
-        logger.Log($"{min},{max},{avg}");
-    }
-
-    public Individual? GetBestIndividual()
-    {
-        return Population.MaxBy(individual => evaluator.Evaluate(individual));
-    }
-
-    public (double, double, double) GetPopulationStats()
-    {
-        var scores = Population.Select(individual => evaluator.Evaluate(individual));
-
-        return (scores.Max(), scores.Min(), scores.Average());
-    }
 }
 

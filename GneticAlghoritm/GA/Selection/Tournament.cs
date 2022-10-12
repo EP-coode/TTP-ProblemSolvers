@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GneticAlghoritm.GA.Selection
+namespace GeneticAlghoritm.GA.Selection
 {
     internal class Tournament
     {

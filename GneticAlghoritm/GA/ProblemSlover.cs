@@ -8,28 +8,33 @@ public abstract class ProblemSlover
     public Individual[] Population { get; protected set; }
     public Individual BestIndividual { get; protected set; }
 
+    public int PopulationSize { get; private set; }
+
     private int[] genPool;
     public ILogger logger { get; init; }
     public IStopPredicate[] StopPredicates { get; init; }
     protected IEvaluator evaluator;
 
-    public ProblemSlover(int[] populationGenes, IEvaluator evaluator)
+    public ProblemSlover(int[] populationGenes, IEvaluator evaluator, int populationSize)
     {
         genPool = populationGenes;
         this.evaluator = evaluator;
+        this.PopulationSize = populationSize;
         GenRandomPopulation();
     }
 
     public void GenRandomPopulation()
     {
-        Population = new Individual[genPool.Length];
+        Population = new Individual[PopulationSize];
 
-        for (int i = 0; i < Population.Length; i++)
+        for (int i = 0; i < PopulationSize; i++)
         {
             if (Population[i] is null)
+            {
                 Population[i] = new Individual(genPool, evaluator);
-            else
-                Population[i].Randomize();
+            }
+
+            Population[i].Randomize();
         }
     }
 

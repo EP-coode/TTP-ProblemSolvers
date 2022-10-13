@@ -8,29 +8,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GeneticAlghoritm.GA.Crossing;
 
 namespace GeneticAlghoritm.GA;
 
 public class GeneticAlghoritm : ProblemSlover
 {
     private double mutationFrequencyTreshold;
+    private double crossingFrequency;
+    Random r = new Random();
     public ICrossingStrategy crossingStrategy { get; init; }
     public IMutationStrategy mutationStrategy { get; init; }
     public ISelector parentSelector { get; init; }
 
-    public GeneticAlghoritm(int[] populationGenes, double mutationFrequencyTreshold, IEvaluator evaluator) 
-        : base(populationGenes, evaluator)
+    public GeneticAlghoritm(int[] populationGenes, int populationSize, double mutationFrequencyTreshold, double crossingFrequency, IEvaluator evaluator,
+        IMutationStrategy mutationStrategy, ICrossingStrategy crossingStrategy, ISelector parentSelector)
+        : base(populationGenes, evaluator, populationSize)
     {
         this.mutationFrequencyTreshold = mutationFrequencyTreshold;
+        this.mutationStrategy = mutationStrategy;
+        this.crossingStrategy = crossingStrategy;
+        this.parentSelector = parentSelector;
+        this.crossingFrequency = crossingFrequency;
     }
 
     public override void Run(int generations)
     {
-        Random r = new Random();
 
         for (int i = 0; i < generations; i++)
         {
-            if (StopPredicates.Length != 0 && StopPredicates.Any(predicate => predicate.MustStop(this)))
+            if (StopPredicates is not null && StopPredicates.Length != 0 && StopPredicates.Any(predicate => predicate.MustStop(this)))
                 return;
 
             Individual[] nextGeneration = new Individual[Population.Length];
@@ -40,19 +47,33 @@ public class GeneticAlghoritm : ProblemSlover
             {
                 var p1 = parentSelector.SelectParent(Population);
                 var p2 = parentSelector.SelectParent(Population);
+                bool willCross = r.NextDouble() < crossingFrequency;
 
-                var childrens = crossingStrategy.Cross(p1, p2);
-
-                for (int k = 0; k < childrens.Length; k++)
+                if (willCross)
                 {
-                    nextGeneration[j + k] = childrens[k];
+                    var childrens = crossingStrategy.Cross(p1, p2);
+
+                    for (int k = 0; k < childrens.Length && k + j < nextGeneration.Length; k++)
+                    {
+                        nextGeneration[j + k] = childrens[k];
+                    }
+
+                    j += childrens.Length;
+                }
+                else
+                {
+                    nextGeneration[j] = p1;
+
+                    if (nextGeneration.Length > j + 1)
+                    {
+                        nextGeneration[j + 1] = p2;
+                    }
                 }
 
-                j += childrens.Length;
             }
 
             // mutation
-            for (int j = 0; j < nextGeneration.Length;)
+            for (int j = 0; j < nextGeneration.Length; j++)
             {
                 bool willMutate = r.NextDouble() < mutationFrequencyTreshold;
 

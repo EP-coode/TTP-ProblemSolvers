@@ -9,7 +9,7 @@ namespace GeneticAlghoritm.GA;
 
 internal class RandomSolver : ProblemSlover
 {
-    public RandomSolver(int[] populationGenes, IEvaluator evaluator) : base(populationGenes, evaluator)
+    public RandomSolver(int[] populationGenes, IEvaluator evaluator, int populationSize) : base(populationGenes, evaluator, populationSize)
     {
     }
 

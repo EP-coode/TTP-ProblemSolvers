@@ -11,12 +11,12 @@ namespace GeneticAlghoritm.GA;
 public class Individual
 {
     public int[] Genome { get; }
-    private double? _value;
-    public double? Value
+    private double _value = double.NaN;
+    public double Value
     {
         get
         {
-            if (_value is null)
+            if (double.IsNaN(_value))
             {
                 double evaluation = Evaluator.Evaluate(this);
                 _value = evaluation;
@@ -36,7 +36,7 @@ public class Individual
         set
         {
             _evaluator = value;
-            Value = null;
+            Value = double.NaN;
         }
     }
 
@@ -50,26 +50,17 @@ public class Individual
             Shuffle(Genome);
     }
 
+    public Individual(int[] genome, IEvaluator evaluator)
+    {
+        this.Evaluator = evaluator;
+        Genome = genome;
+    }
+
     public Individual(Individual individual)
     {
         Genome = new int[individual.Genome.Length];
         Evaluator = individual.Evaluator;
         Array.Copy(individual.Genome, Genome, individual.Genome.Length);
-    }
-
-    public void Mutate(float mutationStrangthTreshold)
-    {
-        Random rand = new Random();
-
-        for (int i = 0; i < Genome.Length; i++)
-        {
-            bool canMutate = rand.NextDouble() < mutationStrangthTreshold / 2;
-            if (canMutate)
-            {
-                int indexToSwap = (rand.Next(0, Genome.Length - 1) + i) % Genome.Length;
-                Swap(i, indexToSwap, Genome);
-            }
-        }
     }
 
     public void Randomize()
@@ -86,7 +77,7 @@ public class Individual
             int indexToSwap = (rand.Next(0, array.Length - 1) + i) % array.Length;
             Swap(i, indexToSwap, array);
         }
-        Value = null;
+        Value = double.NaN;
     }
 
     private void Swap(int x, int y, int[] array)

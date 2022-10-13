@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GeneticAlghoritm.GA;
+namespace GeneticAlghoritm.GA.Crossing;
 
 public interface ICrossingStrategy
 {

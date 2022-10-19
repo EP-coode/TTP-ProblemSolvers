@@ -23,21 +23,6 @@ ICrossingStrategy cycleCrossover = new CycleCrossover();
 ISelector tournamentSelector = new Tournament(3);
 ISelector rouletteSelector = new Roulette(7);
 
-async Task<ProblemSlover> RunSubExperiment(Experiment e, IEvaluator evaluator, TravelingThiefProblem problem, int experimentNumber)
-{
-    CsvFileLogger logger = new CsvFileLogger();
-    logger.SetFileDest(Path.Combine(desktopLocation, e.Name, $"{experimentNumber}_pop-{e.PopSize}_mut-{e.MutationStrategy}_{e.MutationTreshold}_cross-{e.CrossingStrategy}_{e.CrossingTreshold}_selection-{e.SelctionStrategy}.csv"), new string[] { "min", "max", "avg" });
-    int[] avalibleGens = problem.GetGens();
-    ProblemSlover gaSolver = new GeneticAlghoritm.GA.GeneticAlghoritm(avalibleGens,
-        e.PopSize, e.MutationTreshold, e.CrossingTreshold, evaluator, e.MutationStrategy, e.CrossingStrategy, e.SelctionStrategy)
-    {
-        logger = logger,
-    };
-    gaSolver.Run(e.PopSize);
-    logger.Flush();
-    Console.WriteLine("Task: " + e.Name + $"{experimentNumber}/{e.Repeats} done");
-    return gaSolver;
-}
 
 async Task RunExperiment(Experiment e)
 {
@@ -45,21 +30,30 @@ async Task RunExperiment(Experiment e)
     var problem = new TravelingThiefProblem();
     problem.LoadFromFile($".\\lab1\\dane\\{e.FileName}");
     IEvaluator evaluator = new TTPEvaluator(problem, itemsSelector);
-    List<Task<ProblemSlover>> gaTasks = new();
+    List<ProblemSlover> problemSolvers = new();
 
 
     for (int i = 0; i < e.Repeats; i++)
     {
-        gaTasks.Add(Task.Run(() =>RunSubExperiment(e, evaluator, problem, i)));
+        CsvFileLogger logger = new CsvFileLogger();
+        logger.SetFileDest(Path.Combine(desktopLocation, e.Name, $"{i}_pop-{e.PopSize}_mut-{e.MutationStrategy}_{e.MutationTreshold}_cross-{e.CrossingStrategy}_{e.CrossingTreshold}_selection-{e.SelctionStrategy}.csv"), new string[] { "min", "max", "avg" });
+        int[] avalibleGens = problem.GetGens();
+        ProblemSlover gaSolver = new GeneticAlghoritm.GA.GeneticAlghoritm(avalibleGens,
+            e.PopSize, e.MutationTreshold, e.CrossingTreshold, evaluator, e.MutationStrategy, e.CrossingStrategy, e.SelctionStrategy)
+        {
+            logger = logger,
+        };
+        gaSolver.Run(e.PopSize);
+        logger.Flush();
+        problemSolvers.Add(gaSolver);
+        Console.WriteLine("Task: " + e.Name + $" {i}/{e.Repeats} done");
     }
-
-    ProblemSlover[] gaInstances = await Task.WhenAll(gaTasks);
 
     CsvFileLogger logger2 = new CsvFileLogger();
     logger2.SetFileDest(Path.Combine(desktopLocation, e.Name, "best_of_the_bast.csv"), new string[] { "values" });
-    foreach(var gaInstance in gaInstances)
+    foreach(var problemSolver in problemSolvers)
     {
-        logger2.Log(new string[] { gaInstance.BestIndividual.Value.ToString() });  
+        logger2.Log(new string[] { problemSolver.BestIndividual.Value.ToString() });  
     };
     logger2.Flush();
 }

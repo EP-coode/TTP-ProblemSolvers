@@ -25,5 +25,10 @@ internal class Tournament : ISelector
             .Reverse()
             .First();
     }
+
+    public override string ToString()
+    {
+        return $"Tournament{TournamantSize}";
+    }
 }
 

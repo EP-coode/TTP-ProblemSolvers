@@ -18,7 +18,11 @@ internal class RandomSolver : ProblemSlover
         for(int i = 0; i < generations; i++)
         {
             GenRandomPopulation();
-            SaveStatsToLog();
+            //SaveStatsToLog();
+            foreach(var individual in Population)
+            {
+                logger.Log(new string[] { individual.Value.ToString() });
+            }
             Individual generationBestIndividual = GetBestIndividualOfGeneration();
             if(BestIndividual is null || generationBestIndividual.Value > BestIndividual.Value)
             {

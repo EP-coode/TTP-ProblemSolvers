@@ -31,10 +31,16 @@ public abstract class ProblemSlover
         {
             if (Population[i] is null)
             {
-                Population[i] = new Individual(genPool, evaluator);
+                Population[i] = new Individual(genPool, evaluator, true);
             }
 
             Population[i].Randomize();
+        }
+
+        var bestOfGen = GetBestIndividualOfGeneration();
+        if(BestIndividual is null || bestOfGen.Value > BestIndividual.Value)
+        {
+            BestIndividual = new Individual(bestOfGen);
         }
     }
 
@@ -48,7 +54,7 @@ public abstract class ProblemSlover
 
     public Individual? GetBestIndividualOfGeneration()
     {
-        return Population.MaxBy(individual => evaluator.Evaluate(individual));
+        return Population.MaxBy(individual => individual.Value);
     }
 
     public (double, double, double) GetPopulationStats()

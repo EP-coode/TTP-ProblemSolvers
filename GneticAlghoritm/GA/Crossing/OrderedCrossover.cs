@@ -42,5 +42,10 @@ internal class OrderedCrossover : ICrossingStrategy
 
         return new Individual[] { new Individual(offspring1Genome, parent1.Evaluator), new Individual(offspring2Genome, parent1.Evaluator) };
     }
+
+    public override string ToString()
+    {
+        return "OrderedCrossover";
+    }
 }
 

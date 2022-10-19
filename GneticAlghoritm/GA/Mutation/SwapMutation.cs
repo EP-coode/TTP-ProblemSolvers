@@ -37,5 +37,10 @@ internal class SwapMutation : IMutationStrategy
         array[x] = array[y];
         array[y] = temp;
     }
+
+    public override string ToString()
+    {
+        return $"SwapMutation{mutationStrangthTreshold}";
+    }
 }
 

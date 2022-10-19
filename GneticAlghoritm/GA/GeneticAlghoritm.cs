@@ -63,10 +63,12 @@ public class GeneticAlghoritm : ProblemSlover
                 else
                 {
                     nextGeneration[j] = p1;
+                    j++;
 
-                    if (nextGeneration.Length > j + 1)
+                    if (nextGeneration.Length > j)
                     {
-                        nextGeneration[j + 1] = p2;
+                        nextGeneration[j] = p2;
+                        j++;
                     }
                 }
 
@@ -82,6 +84,13 @@ public class GeneticAlghoritm : ProblemSlover
             }
 
             Population = nextGeneration;
+
+            var bestOfGen = GetBestIndividualOfGeneration();
+            if (BestIndividual is null || bestOfGen.Value > BestIndividual.Value)
+            {
+                BestIndividual = new Individual(bestOfGen);
+            }
+
 
             SaveStatsToLog();
         }

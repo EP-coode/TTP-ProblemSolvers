@@ -71,7 +71,12 @@ public class TravelingThiefProblem
     {
         City city1 = Cities[cityIndex1];
         City city2 = Cities[cityIndex2];
-        return Math.Abs(city1.X - city2.X) + Math.Abs(city1.Y + city2.Y);
+        return GetCitiesDistnce(city1, city2);
+    }
+
+    public static double GetCitiesDistnce(City city1, City city2)
+    {
+        return Math.Sqrt(Math.Pow(city1.X - city2.X, 2) + Math.Pow(city1.Y - city2.Y, 2));
     }
 
     private City[] ParseNodes(string[] rawNodesData, Item[] items)

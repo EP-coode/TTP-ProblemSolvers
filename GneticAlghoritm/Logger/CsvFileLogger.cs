@@ -13,6 +13,8 @@ internal class CsvFileLogger : ILogger
 
     public void SetFileDest(string fileDst, string[] fileHeaders, char separator = ';')
     {
+        FileInfo file = new FileInfo(fileDst);
+        file.Directory.Create();
         DstStream = new StreamWriter(fileDst);
         DstStream.WriteLine(string.Join(separator, fileHeaders));
         this.separator = separator;

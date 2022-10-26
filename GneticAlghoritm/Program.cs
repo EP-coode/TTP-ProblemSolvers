@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+
 using GeneticAlghoritm.GA;
 using GeneticAlghoritm.GA.Evaluation;
 using GeneticAlghoritm.ProblemLoader;
@@ -11,374 +12,376 @@ using GneticAlghoritm.GA.Crossing;
 using GneticAlghoritm.Experiment;
 using GneticAlghoritm.GA;
 
+Console.WriteLine("HELLO");
+
 GreedyItemsSelector itemsSelector = new GreedyItemsSelector();
 var desktopLocation = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
-IMutationStrategy inverseMutator = new InverseMutation();
-ICrossingStrategy orderedCrossover = new OrderedCrossover();
+//IMutationStrategy inverseMutator = new InverseMutation();
+//ICrossingStrategy orderedCrossover = new OrderedCrossover();
 
-IMutationStrategy swapMutation = new SwapMutation(0.15);
-ICrossingStrategy cycleCrossover = new CycleCrossover();
+//IMutationStrategy swapMutation = new SwapMutation(0.15);
+//ICrossingStrategy cycleCrossover = new CycleCrossover();
 
-ISelector tournamentSelector = new Tournament(3);
-ISelector rouletteSelector = new Roulette(7);
-
-
-async Task RunExperiment(Experiment e)
-{
-    Console.WriteLine("ThreadID: " + Thread.CurrentThread.ManagedThreadId);
-    var problem = new TravelingThiefProblem();
-    problem.LoadFromFile($".\\lab1\\dane\\{e.FileName}");
-    IEvaluator evaluator = new TTPEvaluator(problem, itemsSelector);
-    List<ProblemSlover> problemSolvers = new();
+//ISelector tournamentSelector = new Tournament(3);
+//ISelector rouletteSelector = new Roulette(7);
 
 
-    for (int i = 0; i < e.Repeats; i++)
-    {
-        CsvFileLogger logger = new CsvFileLogger();
-        logger.SetFileDest(Path.Combine(desktopLocation, e.Name, $"{i}_pop-{e.PopSize}_mut-{e.MutationStrategy}_{e.MutationTreshold}_cross-{e.CrossingStrategy}_{e.CrossingTreshold}_selection-{e.SelctionStrategy}.csv"), new string[] { "min", "max", "avg" });
-        int[] avalibleGens = problem.GetGens();
-        ProblemSlover gaSolver = new GeneticAlghoritm.GA.GeneticAlghoritm(avalibleGens,
-            e.PopSize, e.MutationTreshold, e.CrossingTreshold, evaluator, e.MutationStrategy, e.CrossingStrategy, e.SelctionStrategy)
-        {
-            logger = logger,
-        };
-        gaSolver.Run(e.PopSize);
-        logger.Flush();
-        problemSolvers.Add(gaSolver);
-        Console.WriteLine("Task: " + e.Name + $" {i}/{e.Repeats} done");
-    }
+//async Task RunExperiment(Experiment e)
+//{
+//    Console.WriteLine("ThreadID: " + Thread.CurrentThread.ManagedThreadId);
+//    var problem = new TravelingThiefProblem();
+//    problem.LoadFromFile($".\\lab1\\dane\\{e.FileName}");
+//    IEvaluator evaluator = new TTPEvaluator(problem, itemsSelector);
+//    List<ProblemSlover> problemSolvers = new();
 
-    CsvFileLogger logger2 = new CsvFileLogger();
-    logger2.SetFileDest(Path.Combine(desktopLocation, e.Name, "best_of_the_bast.csv"), new string[] { "values" });
-    foreach(var problemSolver in problemSolvers)
-    {
-        logger2.Log(new string[] { problemSolver.BestIndividual.Value.ToString() });  
-    };
-    logger2.Flush();
-}
 
-var experiments = new List<Experiment>()
-{
-    //new Experiment
-    //{
-    //    Name = "PopSize",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = tournamentSelector,
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //},
-    //new Experiment
-    //{
-    //    Name = "PopSize",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = tournamentSelector,
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 50,
-    //    Repeats = 1,
-    //},
-    //new Experiment
-    //{
-    //    Name = "PopSize",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = tournamentSelector,
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 20,
-    //    Repeats = 1,
-    //},
-    // new Experiment
-    //{
-    //    Name = "PopSize",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = tournamentSelector,
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 200,
-    //    Repeats = 1,
-    //},
-    // new Experiment
-    //{
-    //    Name = "MutTreshold",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = tournamentSelector,
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.02,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //},
-    //  new Experiment
-    //{
-    //    Name = "MutTreshold",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = tournamentSelector,
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //},
-    //   new Experiment
-    //{
-    //    Name = "MutTreshold",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = tournamentSelector,
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.4,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //}
-    //     new Experiment
-    //{
-    //    Name = "CrossTreshold",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = tournamentSelector,
-    //    CrossingTreshold = 0.5,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //},
-    //  new Experiment
-    //{
-    //    Name = "CrossTreshold",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = tournamentSelector,
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //},
-    //   new Experiment
-    //{
-    //    Name = "CrossTreshold",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = tournamentSelector,
-    //    CrossingTreshold = 1,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //}
-    //   new Experiment
-    //{
-    //    Name = "SelStrategy",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = tournamentSelector,
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //},
-    //   new Experiment
-    //{
-    //    Name = "SelStrategy",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = rouletteSelector,
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //}
-    //   new Experiment
-    //{
-    //    Name = "SelStrategy",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = new Tournament(7),
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //},
-    //   new Experiment
-    //{
-    //    Name = "SelStrategy",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = new Tournament(1),
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //}
-    //   new Experiment
-    //{
-    //    Name = "SelStrategy",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = new Tournament(52),
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //}
-    //  new Experiment
-    //{
-    //    Name = "CrossStrategy",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = new Tournament(3),
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //},
-    //        new Experiment
-    //{
-    //    Name = "CrossStrategy",
-    //    CrossingStrategy = new CycleCrossover(),
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = new Tournament(3),
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //}
-    //  new Experiment
-    //{
-    //    Name = "MutSrategy",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = swapMutation,
-    //    SelctionStrategy = new Tournament(3),
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //},
-    //     new Experiment
-    //{
-    //    Name = "MutSrategy",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = new SwapMutation(0.3),
-    //    SelctionStrategy = new Tournament(3),
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //},
-    //        new Experiment
-    //{
-    //    Name = "MutSrategy",
-    //    CrossingStrategy = orderedCrossover,
-    //    MutationStrategy = new InverseMutation(),
-    //    SelctionStrategy = new Tournament(3),
-    //    CrossingTreshold = 0.7,
-    //    MutationTreshold = 0.2,
-    //    FileName = "medium_4.ttp",
-    //    PopSize = 100,
-    //    Repeats = 1,
-    //}
-    //{
-    new Experiment{
-    Name = "CompareRandomAndGreedyAndAG_EASY4",
-    CrossingStrategy = orderedCrossover,
-    MutationStrategy = swapMutation,
-    SelctionStrategy = new Tournament(3),
-    CrossingTreshold = 0.7,
-    MutationTreshold = 0.2,
-    FileName = "easy_4.ttp",
-    PopSize = 500,
-    Repeats = 10,
-},
-        new Experiment{
-    Name = "CompareRandomAndGreedyAndAG_EASY3",
-    CrossingStrategy = orderedCrossover,
-    MutationStrategy = swapMutation,
-    SelctionStrategy = new Tournament(3),
-    CrossingTreshold = 0.7,
-    MutationTreshold = 0.2,
-    FileName = "easy_3.ttp",
-    PopSize = 500,
-    Repeats = 10,
-},
-            new Experiment{
-    Name = "CompareRandomAndGreedyAndAG_MED3",
-    CrossingStrategy = orderedCrossover,
-    MutationStrategy = swapMutation,
-    SelctionStrategy = new Tournament(3),
-    CrossingTreshold = 0.7,
-    MutationTreshold = 0.2,
-    FileName = "medium_3.ttp",
-    PopSize = 500,
-    Repeats = 10,
-},
-                new Experiment{
-    Name = "CompareRandomAndGreedyAndAG_MED4",
-    CrossingStrategy = orderedCrossover,
-    MutationStrategy = swapMutation,
-    SelctionStrategy = new Tournament(3),
-    CrossingTreshold = 0.7,
-    MutationTreshold = 0.2,
-    FileName = "medium_4.ttp",
-    PopSize = 500,
-    Repeats = 10,
-},
-                    new Experiment{
-    Name = "CompareRandomAndGreedyAndAG_HARD0",
-    CrossingStrategy = orderedCrossover,
-    MutationStrategy = swapMutation,
-    SelctionStrategy = new Tournament(7),
-    CrossingTreshold = 0.7,
-    MutationTreshold = 0.2,
-    FileName = "hard_0.ttp",
-    PopSize = 500,
-    Repeats = 10,
-},
-                        new Experiment{
-    Name = "CompareRandomAndGreedyAndAG_HARD1",
-    CrossingStrategy = orderedCrossover,
-    MutationStrategy = swapMutation,
-    SelctionStrategy = new Tournament(7),
-    CrossingTreshold = 0.7,
-    MutationTreshold = 0.2,
-    FileName = "hard_1.ttp",
-    PopSize = 500,
-    Repeats = 10,
-}
-};
+//    for (int i = 0; i < e.Repeats; i++)
+//    {
+//        CsvFileLogger logger = new CsvFileLogger();
+//        logger.SetFileDest(Path.Combine(desktopLocation, e.Name, $"{i}_pop-{e.PopSize}_mut-{e.MutationStrategy}_{e.MutationTreshold}_cross-{e.CrossingStrategy}_{e.CrossingTreshold}_selection-{e.SelctionStrategy}.csv"), new string[] { "min", "max", "avg" });
+//        int[] avalibleGens = problem.GetGens();
+//        ProblemSlover gaSolver = new GeneticAlghoritm.GA.GeneticAlghoritm(avalibleGens,
+//            e.PopSize, e.MutationTreshold, e.CrossingTreshold, evaluator, e.MutationStrategy, e.CrossingStrategy, e.SelctionStrategy)
+//        {
+//            logger = logger,
+//        };
+//        gaSolver.Run(e.PopSize);
+//        logger.Flush();
+//        problemSolvers.Add(gaSolver);
+//        Console.WriteLine("Task: " + e.Name + $" {i}/{e.Repeats} done");
+//    }
 
-ThreadPool.SetMinThreads(16, 16);
-ThreadPool.SetMaxThreads(16, 16);
-var tasks = new List<Task>();
+//    CsvFileLogger logger2 = new CsvFileLogger();
+//    logger2.SetFileDest(Path.Combine(desktopLocation, e.Name, "best_of_the_bast.csv"), new string[] { "values" });
+//    foreach (var problemSolver in problemSolvers)
+//    {
+//        logger2.Log(new string[] { problemSolver.BestIndividual.Value.ToString() });
+//    };
+//    logger2.Flush();
+//}
 
-foreach (var experiment in experiments)
-{
-    tasks.Add(Task.Run(() => RunExperiment(experiment)));
-}
+//var experiments = new List<Experiment>()
+//{
+//new Experiment
+//{
+//    Name = "PopSize",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = tournamentSelector,
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//},
+//new Experiment
+//{
+//    Name = "PopSize",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = tournamentSelector,
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 50,
+//    Repeats = 1,
+//},
+//new Experiment
+//{
+//    Name = "PopSize",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = tournamentSelector,
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 20,
+//    Repeats = 1,
+//},
+// new Experiment
+//{
+//    Name = "PopSize",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = tournamentSelector,
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 200,
+//    Repeats = 1,
+//},
+// new Experiment
+//{
+//    Name = "MutTreshold",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = tournamentSelector,
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.02,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//},
+//  new Experiment
+//{
+//    Name = "MutTreshold",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = tournamentSelector,
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//},
+//   new Experiment
+//{
+//    Name = "MutTreshold",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = tournamentSelector,
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.4,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//}
+//     new Experiment
+//{
+//    Name = "CrossTreshold",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = tournamentSelector,
+//    CrossingTreshold = 0.5,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//},
+//  new Experiment
+//{
+//    Name = "CrossTreshold",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = tournamentSelector,
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//},
+//   new Experiment
+//{
+//    Name = "CrossTreshold",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = tournamentSelector,
+//    CrossingTreshold = 1,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//}
+//   new Experiment
+//{
+//    Name = "SelStrategy",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = tournamentSelector,
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//},
+//   new Experiment
+//{
+//    Name = "SelStrategy",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = rouletteSelector,
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//}
+//   new Experiment
+//{
+//    Name = "SelStrategy",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = new Tournament(7),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//},
+//   new Experiment
+//{
+//    Name = "SelStrategy",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = new Tournament(1),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//}
+//   new Experiment
+//{
+//    Name = "SelStrategy",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = new Tournament(52),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//}
+//  new Experiment
+//{
+//    Name = "CrossStrategy",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = new Tournament(3),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//},
+//        new Experiment
+//{
+//    Name = "CrossStrategy",
+//    CrossingStrategy = new CycleCrossover(),
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = new Tournament(3),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//}
+//  new Experiment
+//{
+//    Name = "MutSrategy",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = new Tournament(3),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//},
+//     new Experiment
+//{
+//    Name = "MutSrategy",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = new SwapMutation(0.3),
+//    SelctionStrategy = new Tournament(3),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//},
+//        new Experiment
+//{
+//    Name = "MutSrategy",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = new InverseMutation(),
+//    SelctionStrategy = new Tournament(3),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 100,
+//    Repeats = 1,
+//}
+//{
+//    new Experiment{
+//    Name = "CompareRandomAndGreedyAndAG_EASY4",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = new Tournament(3),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "easy_4.ttp",
+//    PopSize = 500,
+//    Repeats = 10,
+//},
+//        new Experiment{
+//    Name = "CompareRandomAndGreedyAndAG_EASY3",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = new Tournament(3),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "easy_3.ttp",
+//    PopSize = 500,
+//    Repeats = 10,
+//},
+//            new Experiment{
+//    Name = "CompareRandomAndGreedyAndAG_MED3",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = new Tournament(3),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_3.ttp",
+//    PopSize = 500,
+//    Repeats = 10,
+//},
+//                new Experiment{
+//    Name = "CompareRandomAndGreedyAndAG_MED4",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = new Tournament(3),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "medium_4.ttp",
+//    PopSize = 500,
+//    Repeats = 10,
+//},
+//                    new Experiment{
+//    Name = "CompareRandomAndGreedyAndAG_HARD0",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = new Tournament(7),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "hard_0.ttp",
+//    PopSize = 500,
+//    Repeats = 10,
+//},
+//                        new Experiment{
+//    Name = "CompareRandomAndGreedyAndAG_HARD1",
+//    CrossingStrategy = orderedCrossover,
+//    MutationStrategy = swapMutation,
+//    SelctionStrategy = new Tournament(7),
+//    CrossingTreshold = 0.7,
+//    MutationTreshold = 0.2,
+//    FileName = "hard_1.ttp",
+//    PopSize = 500,
+//    Repeats = 10,
+//}
+//};
 
-await Task.WhenAll(tasks);
+//ThreadPool.SetMinThreads(16, 16);
+//ThreadPool.SetMaxThreads(16, 16);
+//var tasks = new List<Task>();
+
+//foreach (var experiment in experiments)
+//{
+//    tasks.Add(Task.Run(() => RunExperiment(experiment)));
+//}
+
+//await Task.WhenAll(tasks);
 
 // GREEDY AND RANDOM
 
@@ -405,5 +408,23 @@ await Task.WhenAll(tasks);
 
 //logger.Flush();
 //logger2.Flush();
+
+
+var problem = new TravelingThiefProblem();
+problem.LoadFromFile(".\\lab1\\dane\\hard_0.ttp");
+IEvaluator evaluator = new TTPEvaluator(problem, itemsSelector);
+int[] avalibleGens = problem.GetGens();
+CsvFileLogger logger = new CsvFileLogger();
+logger.SetFileDest(Path.Combine(desktopLocation, "ts_tabu60_s30.csv"), new string[] { "current", "best" });
+
+
+var tsSolver = new GneticAlghoritm.TS.TabuSearch(avalibleGens, evaluator, new GneticAlghoritm.TS.InverseGenerator(), 10, 100)
+{
+    logger = logger
+};
+
+tsSolver.Run(1000);
+logger.Flush();
+
 
 Console.WriteLine("DONE");

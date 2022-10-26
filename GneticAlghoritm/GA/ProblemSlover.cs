@@ -37,8 +37,13 @@ public abstract class ProblemSlover
             Population[i].Randomize();
         }
 
+        UpdateBestIndividual();
+    }
+
+    public void UpdateBestIndividual()
+    {
         var bestOfGen = GetBestIndividualOfGeneration();
-        if(BestIndividual is null || bestOfGen.Value > BestIndividual.Value)
+        if (BestIndividual is null || bestOfGen.Value > BestIndividual.Value)
         {
             BestIndividual = new Individual(bestOfGen);
         }

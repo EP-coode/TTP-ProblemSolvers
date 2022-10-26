@@ -8,7 +8,7 @@ using GeneticAlghoritm.GA.Evaluation;
 
 namespace GeneticAlghoritm.GA;
 
-public class Individual
+public class Individual : IEquatable<Individual>, IComparable<Individual>
 {
     public int[] Genome { get; }
     private double _value = double.NaN;
@@ -87,9 +87,29 @@ public class Individual
         array[y] = temp;
     }
 
-    public Individual CrossOver(Individual otherGenome)
+    public bool Equals(Individual? other)
     {
-        throw new NotImplementedException();
+        if (other == null)
+            return false;
+
+        if (other.Genome.Length != Genome.Length)
+            return false;
+
+        for(int i = 0; i < Genome.Length; i++)
+        {
+            if(Genome[i] != other.Genome[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    public int CompareTo(Individual? other)
+    {
+        if(other == null)   
+            return 1;
+
+        return other.Value.CompareTo(Value);
     }
 }
 

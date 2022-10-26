@@ -40,6 +40,7 @@ public class GeneticAlghoritm : ProblemSlover
             if (StopPredicates is not null && StopPredicates.Length != 0 && StopPredicates.Any(predicate => predicate.MustStop(this)))
                 return;
 
+            Console.WriteLine($"Pokolenie {i}");
             Individual[] nextGeneration = new Individual[Population.Length];
 
             // reproduction
@@ -80,7 +81,10 @@ public class GeneticAlghoritm : ProblemSlover
                 bool willMutate = r.NextDouble() < mutationFrequencyTreshold;
 
                 if (willMutate)
+                {
+                    nextGeneration[j] = new Individual(nextGeneration[j]);
                     mutationStrategy.Mutate(nextGeneration[j]);
+                }
             }
 
             Population = nextGeneration;

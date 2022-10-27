@@ -411,14 +411,14 @@ var desktopLocation = Environment.GetFolderPath(Environment.SpecialFolder.Deskto
 
 
 var problem = new TravelingThiefProblem();
-problem.LoadFromFile(".\\lab1\\dane\\hard_0.ttp");
+problem.LoadFromFile(".\\lab1\\dane\\medium_0.ttp");
 IEvaluator evaluator = new TTPEvaluator(problem, itemsSelector);
 int[] avalibleGens = problem.GetGens();
 CsvFileLogger logger = new CsvFileLogger();
-logger.SetFileDest(Path.Combine(desktopLocation, "ts_tabu60_s30.csv"), new string[] { "current", "best" });
+logger.SetFileDest(Path.Combine(desktopLocation, "ts_tabu200_s8_inv.csv"), new string[] { "current", "best", "max", "min", "avg" });
 
 
-var tsSolver = new GneticAlghoritm.TS.TabuSearch(avalibleGens, evaluator, new GneticAlghoritm.TS.InverseGenerator(), 10, 100)
+var tsSolver = new GneticAlghoritm.TS.TabuSearch(avalibleGens, evaluator, new GneticAlghoritm.TS.InverseGenerator(), 9, 200)
 {
     logger = logger
 };

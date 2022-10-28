@@ -31,5 +31,10 @@ public class SwapNeighbourGenerator : INeighbourGenerator
 
         return neighbours;
     }
+
+    public override string ToString()
+    {
+        return "swap";
+    }
 }
 

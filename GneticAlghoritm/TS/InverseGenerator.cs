@@ -24,5 +24,10 @@ internal class InverseGenerator : INeighbourGenerator
 
         return neighbours;
     }
+
+    public override string ToString()
+    {
+        return "inverse";
+    }
 }
 

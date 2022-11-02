@@ -311,11 +311,11 @@ List<SA_Experiment> sa_experiments = new List<SA_Experiment>()
      new SA_Experiment()
     {
         ExperimentName = "TestRun",
-        CoolingStrategy = new ExponentialCooling(0.003),
+        CoolingStrategy = new ExponentialCooling(0.0015),
         dataSet="medium_4.ttp",
-        InitialTemperature=10_000,
+        InitialTemperature=1_000,
         MinTemperature=10,
-        NeighbourGenerator = new InverseGenerator(),
+        NeighbourGenerator = new SwapNeighbourGenerator(1),
         NeightbourhoodSize = 1,
         repeats = 1
     },
@@ -323,7 +323,7 @@ List<SA_Experiment> sa_experiments = new List<SA_Experiment>()
     //{
     //    ExperimentName = "TestRun",
     //    CoolingStrategy = new ExponentialCooling(0.002),
-    //    dataSet="easy_4.ttp",
+    //    dataSet="medium_4.ttp",
     //    InitialTemperature=5_000,
     //    MinTemperature=0,
     //    NeighbourGenerator = new InverseGenerator(),

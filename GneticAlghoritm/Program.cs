@@ -14,6 +14,7 @@ using GneticAlghoritm.GA;
 using GneticAlghoritm.TS;
 using System.Reflection.Emit;
 using System.Data;
+using GneticAlghoritm.SA;
 
 Console.WriteLine("HELLO");
 
@@ -88,6 +89,39 @@ void RunTsExperiment(TS_Experiment e)
         };
 
         tsSolver.Run(2_000);
+        logger.Flush();
+        logger2.Log(new string[] { $"{tsSolver.BestIndividual.Value}" });
+    });
+
+    logger2.Flush();
+}
+
+void RunSaExperiment(SA_Experiment e)
+{
+    var problem = new TravelingThiefProblem();
+    problem.LoadFromFile($".\\lab1\\dane\\{e.dataSet}");
+    IEvaluator evaluator = new TTPEvaluator(problem, itemsSelector);
+    int[] avalibleGens = problem.GetGens();
+    CsvFileLogger logger2 = new CsvFileLogger();
+    
+    logger2.SetFileDest(Path.Combine(desktopLocation, e.ExperimentName, $"summary_n-size_{e.NeightbourhoodSize}_start-t_{e.InitialTemperature}_min-t_{e.MinTemperature}_{e.CoolingStrategy}.csv"), new string[] { "best_value_in_run" });
+
+    Individual[] best = new Individual[e.repeats];
+    List<int> experimentIds = Enumerable.Range(0, e.repeats).ToList();
+
+    Parallel.ForEach(experimentIds, experimentId =>
+    {
+        CsvFileLogger logger = new CsvFileLogger();
+        //$"{experimentId}_n-size_{e.NeightbourhoodSize}_start-t_{e.InitialTemperature}_min-t_{e.MinTemperature}_{e.CoolingStrategy}.csv"
+        logger.SetFileDest(Path.Combine(desktopLocation, e.ExperimentName, $"test.csv"), new string[] { "current", "best", "temperature" });
+
+
+        var tsSolver = new SimulatedAnnealing(avalibleGens, evaluator, e.NeighbourGenerator, e.NeightbourhoodSize, e.InitialTemperature, e.MinTemperature, e.CoolingStrategy)
+        {
+            logger = logger
+        };
+
+        tsSolver.Run(3_000);
         logger.Flush();
         logger2.Log(new string[] { $"{tsSolver.BestIndividual.Value}" });
     });
@@ -256,9 +290,62 @@ List<TS_Experiment> ts_experiments = new List<TS_Experiment>()
     //},
 };
 
-Parallel.ForEach(ts_experiments, e =>
+//Parallel.ForEach(ts_experiments, e =>
+//{
+//    RunTsExperiment(e);
+//});
+
+List<SA_Experiment> sa_experiments = new List<SA_Experiment>()
 {
-    RunTsExperiment(e);
+    //new SA_Experiment()
+    //{
+    //    ExperimentName = "TestRun",
+    //    CoolingStrategy = new LinearCooling(1.5),
+    //    dataSet="medium_4.ttp",
+    //    InitialTemperature=3_000,
+    //    MinTemperature=10,
+    //    NeighbourGenerator = new InverseGenerator(),
+    //    NeightbourhoodSize = 1,
+    //    repeats = 1
+    //},
+     new SA_Experiment()
+    {
+        ExperimentName = "TestRun",
+        CoolingStrategy = new ExponentialCooling(0.003),
+        dataSet="medium_4.ttp",
+        InitialTemperature=10_000,
+        MinTemperature=10,
+        NeighbourGenerator = new InverseGenerator(),
+        NeightbourhoodSize = 1,
+        repeats = 1
+    },
+    //      new SA_Experiment()
+    //{
+    //    ExperimentName = "TestRun",
+    //    CoolingStrategy = new ExponentialCooling(0.002),
+    //    dataSet="easy_4.ttp",
+    //    InitialTemperature=5_000,
+    //    MinTemperature=0,
+    //    NeighbourGenerator = new InverseGenerator(),
+    //    NeightbourhoodSize = 1,
+    //    repeats = 1
+    //},
+    //new SA_Experiment()
+    //{
+    //    ExperimentName = "TestRun",
+    //    CoolingStrategy =  new ExponentialCooling(0.003),
+    //    dataSet="hard_4.ttp",
+    //    InitialTemperature=10_000,
+    //    MinTemperature=0,
+    //    NeighbourGenerator = new InverseGenerator(),
+    //    NeightbourhoodSize = 1,
+    //    repeats = 1
+    //},
+};
+
+Parallel.ForEach(sa_experiments, e =>
+{
+    RunSaExperiment(e);
 });
 
 

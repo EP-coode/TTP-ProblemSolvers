@@ -320,7 +320,7 @@ var saParametersSpace = new SaParameterSpace()
 
 var tsParametersSpace = new TsParametersSpace()
 {
-    neightbourhoodSize = Enumerable.Range(1, 75).Select(x => x * 2),
+    neightbourhoodSize = Enumerable.Range(1, 10).Select(x => 2 * x).Union(Enumerable.Range(5, 5).Select(x => x * 10)).Union(Enumerable.Range(5, 5).Select(x => x * 20)),
     tabuSize = Enumerable.Range(1, 50).Select(x => x * 200), // od 50 do 10_000; krok 50
 };
 

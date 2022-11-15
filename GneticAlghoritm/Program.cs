@@ -320,8 +320,8 @@ var saParametersSpace = new SaParameterSpace()
 
 var tsParametersSpace = new TsParametersSpace()
 {
-    neightbourhoodSize = Enumerable.Range(1, 150),
-    tabuSize = Enumerable.Range(1, 300).Select(x => x * 30), // od 30 do 9_000; krok 30
+    neightbourhoodSize = Enumerable.Range(1, 75).Select(x => x * 2),
+    tabuSize = Enumerable.Range(1, 50).Select(x => x * 200), // od 50 do 10_000; krok 50
 };
 
 
@@ -336,8 +336,8 @@ var gaParametersSpace = new EaParamsSpace()
     MutationStrategy = new List<IMutationStrategy>() { new InverseMutation(), new SwapCountMutation(1) },
 };
 
-RunSaParameterSpaceOverwiew(saParametersSpace, "easy_0.ttp", "easy_0-SA", 10, 5_000);
-Console.WriteLine("SA DONE");
+//RunSaParameterSpaceOverwiew(saParametersSpace, "easy_0.ttp", "easy_0-SA", 10, 5_000);
+//Console.WriteLine("SA DONE");
 
 RunTsParameterSpaceOverwiew(tsParametersSpace, "easy_0.ttp", "easy_0-TS", 10, 5_000);
 Console.WriteLine("TS DONE");

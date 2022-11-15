@@ -40,7 +40,7 @@ public class SwapCountMutation : GeneticAlghoritm.GA.Mutation.IMutationStrategy
 
     public override string ToString()
     {
-        return $"SwapCountMutation{swapsCount}";
+        return $"SwapCountMutation({swapsCount})";
     }
 }
 

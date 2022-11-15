@@ -10,6 +10,7 @@ internal class CsvFileLogger : ILogger
 {
     private StreamWriter DstStream { get; set; }
     private char separator;
+    private object lockTarget = new object();
 
     public void SetFileDest(string fileDst, string[] fileHeaders, char separator = ';')
     {
@@ -32,7 +33,10 @@ internal class CsvFileLogger : ILogger
 
     public void Log(string[] data)
     {
-        DstStream.WriteLine(string.Join(separator, data));
+        lock (lockTarget)
+        {
+            DstStream.WriteLine(string.Join(separator, data));
+        }
     }
 }
 

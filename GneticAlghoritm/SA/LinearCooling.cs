@@ -22,7 +22,7 @@ public class LinearCooling : ICoolingStrategy
 
     public override string ToString()
     {
-        return "Linear";
+        return $"{CoolingStep}"; ;
     }
 }
 

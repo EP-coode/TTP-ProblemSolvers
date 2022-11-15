@@ -20,6 +20,5 @@ public class Experiment
     public int PopSize { get; set ; }
     public double MutationTreshold { get; set; }
     public double CrossingTreshold { get; set; }
-    public double MutationStrenght { get; set; }
 }
 

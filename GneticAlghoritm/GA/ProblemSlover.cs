@@ -11,7 +11,7 @@ public abstract class ProblemSlover
     public int PopulationSize { get; private set; }
 
     private int[] genPool;
-    public ILogger logger { get; init; }
+    public ILogger? logger { get; init; }
     public IStopPredicate[] StopPredicates { get; init; }
     protected IEvaluator evaluator;
 
@@ -31,7 +31,7 @@ public abstract class ProblemSlover
         {
             if (Population[i] is null)
             {
-                Population[i] = new Individual(genPool, evaluator, true);
+                Population[i] = new Individual(genPool, evaluator, shuffleGenome: true);
             }
 
             Population[i].Randomize();

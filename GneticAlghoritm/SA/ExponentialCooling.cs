@@ -22,7 +22,7 @@ internal class ExponentialCooling : ICoolingStrategy
 
     public override string ToString()
     {
-        return "Exponential";
+        return $"{CoolingTreshold}";
     }
 }
 

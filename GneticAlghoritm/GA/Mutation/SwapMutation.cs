@@ -40,7 +40,7 @@ internal class SwapMutation : IMutationStrategy
 
     public override string ToString()
     {
-        return $"SwapMutation{mutationStrangthTreshold}";
+        return $"SwapMutation({mutationStrangthTreshold})";
     }
 }
 

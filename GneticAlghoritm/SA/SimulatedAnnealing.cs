@@ -28,14 +28,14 @@ public class SimulatedAnnealing : ProblemSlover
         this.neightbourhoodSize = neightbourhoodSize;
         this.temperature = initialTemperature;
         this.minTemperature = minTemperature;
-        currentIndividual = new Individual(populationGenes, evaluator);
+        currentIndividual = new Individual(populationGenes, evaluator, shuffleGenome: true);
         BestIndividual = new Individual(currentIndividual);
         this.coolingStrategy = coolingStrategy;
     }
 
     public override void Run(int generations)
     {
-        logger.Log(new string[] { $"{currentIndividual.Value}", $"{BestIndividual.Value}", $"{temperature}" });
+        logger?.Log(new string[] { $"{currentIndividual.Value}", $"{BestIndividual.Value}", $"{temperature}" });
         int iterations = 0;
 
         for (int i = 0; i < generations; i++)
@@ -56,7 +56,8 @@ public class SimulatedAnnealing : ProblemSlover
 
             temperature = coolingStrategy.CoolDown(temperature);
 
-            logger.Log(new string[] { $"{currentIndividual.Value}", $"{BestIndividual.Value}", $"{temperature}" });
+
+            logger?.Log(new string[] { $"{currentIndividual.Value}", $"{BestIndividual.Value}", $"{temperature}" });
 
             iterations = i;
 
@@ -65,7 +66,7 @@ public class SimulatedAnnealing : ProblemSlover
                 break;
             }
         }
-        Console.WriteLine($"Wyrażenie akceptowane w {(AcceptAmmount/iterations) * 100} % przypadków");
+        //Console.WriteLine($"Wyrażenie akceptowane w {(AcceptAmmount/iterations) * 100} % przypadków");
     }
 
     private bool CanAcceptNeighbour(Individual neightbour)

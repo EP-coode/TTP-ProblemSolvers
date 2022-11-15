@@ -8,22 +8,23 @@ namespace GeneticAlghoritm.GA.Selection;
 
 internal class Tournament : ISelector
 {
-    public int TournamantSize { get; set; }
+    public double TournamantSize { get; set; }
     private Random random = new Random();
 
-    public Tournament(int tournamentSize)
+    public Tournament(double tournamentSize)
     {
         TournamantSize = tournamentSize;
     }
 
     public Individual SelectParent(Individual[] population)
     {
-         return population
-            .OrderBy(individual => random.Next())
-            .Take(TournamantSize)
-            .OrderBy(individual => individual.Value)
-            .Reverse()
-            .First();
+        int sampleSize = (int)(population.Length * TournamantSize) % population.Length;
+        return population
+           .OrderBy(individual => random.Next())
+           .Take(Math.Max(sampleSize, 1))
+           .OrderBy(individual => individual.Value)
+           .Reverse()
+           .First();
     }
 
     public override string ToString()

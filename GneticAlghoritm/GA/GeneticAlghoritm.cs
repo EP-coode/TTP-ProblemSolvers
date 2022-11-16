@@ -40,7 +40,7 @@ public class GeneticAlghoritm : ProblemSlover
             if (StopPredicates is not null && StopPredicates.Length != 0 && StopPredicates.Any(predicate => predicate.MustStop(this)))
                 return;
 
-            Console.WriteLine($"Pokolenie {i}");
+            //Console.WriteLine($"Pokolenie {i}");
             Individual[] nextGeneration = new Individual[Population.Length];
 
             // reproduction

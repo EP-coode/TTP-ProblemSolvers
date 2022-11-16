@@ -339,8 +339,8 @@ var gaParametersSpace = new EaParamsSpace()
 //RunSaParameterSpaceOverwiew(saParametersSpace, "easy_0.ttp", "easy_0-SA", 10, 5_000);
 //Console.WriteLine("SA DONE");
 
-RunTsParameterSpaceOverwiew(tsParametersSpace, "easy_0.ttp", "easy_0-TS", 10, 5_000);
-Console.WriteLine("TS DONE");
+//RunTsParameterSpaceOverwiew(tsParametersSpace, "easy_0.ttp", "easy_0-TS", 10, 5_000);
+//Console.WriteLine("TS DONE");
 
 RunEaParameterSpaceOverwiew(gaParametersSpace, "easy_0.ttp", "easy_0-GA", 10, 1_000);
 Console.WriteLine("GA DONE");

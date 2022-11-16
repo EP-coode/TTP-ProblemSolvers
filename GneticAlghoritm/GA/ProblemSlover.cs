@@ -54,7 +54,7 @@ public abstract class ProblemSlover
     public void SaveStatsToLog()
     {
         var (max, min, avg) = GetPopulationStats();
-        logger.Log(new string[] { min.ToString(), max.ToString(), avg.ToString() });
+        logger?.Log(new string[] { min.ToString(), max.ToString(), avg.ToString() });
     }
 
     public Individual? GetBestIndividualOfGeneration()

@@ -327,13 +327,13 @@ var tsParametersSpace = new TsParametersSpace()
 
 var gaParametersSpace = new EaParamsSpace()
 {
-    PopSize = Enumerable.Range(1, 25).Select(x => x * 40), // od 10 do 1000; krok 20
+    PopSize = Enumerable.Range(1, 15).Select(x => x * 30), // od 10 do 1000; krok 20
     CrossingTreshold = Enumerable.Range(0, 20).Select(x => x * 0.05), // 0 do 1; krok 0,05
     MutationTreshold = Enumerable.Range(0, 20).Select(x => x * 0.05), // 0 do 1; krok 0,05
-    SelctionStrategy = Enumerable.Range(0, 20).Select(x => (ISelector)new Tournament(x * 0.05)) //  0 do 0.5; krok 0,01
-        .Union(Enumerable.Range(2, 7).Select(x => (ISelector)new Roulette(x))),
-    CrossingStrategy = new List<ICrossingStrategy>() { new OrderedCrossover(), new CycleCrossover() },
-    MutationStrategy = new List<IMutationStrategy>() { new InverseMutation(), new SwapCountMutation(1) },
+    SelctionStrategy = Enumerable.Range(0, 20).Select(x => (ISelector)new Tournament(x * 0.05)), //  0 do 0.5; krok 0,01
+        //.Union(Enumerable.Range(2, 7).Select(x => (ISelector)new Roulette(x))),
+    CrossingStrategy = new List<ICrossingStrategy>() { new OrderedCrossover() },
+    MutationStrategy = new List<IMutationStrategy>() { new SwapCountMutation(1) },
 };
 
 //RunSaParameterSpaceOverwiew(saParametersSpace, "easy_0.ttp", "easy_0-SA", 10, 5_000);
@@ -342,51 +342,51 @@ var gaParametersSpace = new EaParamsSpace()
 //RunTsParameterSpaceOverwiew(tsParametersSpace, "easy_0.ttp", "easy_0-TS", 10, 5_000);
 //Console.WriteLine("TS DONE");
 
-RunEaParameterSpaceOverwiew(gaParametersSpace, "easy_0.ttp", "easy_0-GA", 10, 1_000);
+RunEaParameterSpaceOverwiew(gaParametersSpace, "easy_0.ttp", "easy_0-GA", 10, 400);
 Console.WriteLine("GA DONE");
 
 // ================================================
 
-RunSaParameterSpaceOverwiew(saParametersSpace, "medium_0.ttp", "medium_0-SA", 10, 5_000);
+RunSaParameterSpaceOverwiew(saParametersSpace, "medium_0.ttp", "medium_0-SA", 10, 3_000);
 Console.WriteLine("SA DONE - MED 0");
 
-RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_0.ttp", "medium_0-TS", 10, 5_000);
+RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_0.ttp", "medium_0-TS", 10, 3_000);
 Console.WriteLine("TS DONE - MED 0");
 
-RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_0.ttp", "medium_0-GA", 10, 1_000);
+RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_0.ttp", "medium_0-GA", 10, 400);
 Console.WriteLine("GA DONE - MED 0");
 
 // ================================================
 
-RunSaParameterSpaceOverwiew(saParametersSpace, "medium_1.ttp", "medium_1-SA", 10, 5_000);
+RunSaParameterSpaceOverwiew(saParametersSpace, "medium_1.ttp", "medium_1-SA", 10, 3_000);
 Console.WriteLine("SA DONE - MED 1");
 
-RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_1.ttp", "medium_1-TS", 10, 5_000);
+RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_1.ttp", "medium_1-TS", 10, 3_000);
 Console.WriteLine("TS DONE - MED 1");
 
-RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_1.ttp", "medium_1-GA", 10, 1_000);
+RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_1.ttp", "medium_1-GA", 10, 400);
 Console.WriteLine("GA DONE - MED 1");
 
 // ================================================
 
-RunSaParameterSpaceOverwiew(saParametersSpace, "medium_2.ttp", "medium_2-SA", 10, 5_000);
+RunSaParameterSpaceOverwiew(saParametersSpace, "medium_2.ttp", "medium_2-SA", 10, 3_000);
 Console.WriteLine("SA DONE - MED 3");
 
-RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_2.ttp", "medium_2-TS", 10, 5_000);
+RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_2.ttp", "medium_2-TS", 10, 3_000);
 Console.WriteLine("TS DONE - MED 2");
 
-RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_2.ttp", "medium_2-GA", 10, 1_000);
+RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_2.ttp", "medium_2-GA", 10, 400);
 Console.WriteLine("GA DONE - MED 2");
 
 // ================================================
 
-RunSaParameterSpaceOverwiew(saParametersSpace, "hard_3.ttp", "hard_3-SA", 10, 10_000);
+RunSaParameterSpaceOverwiew(saParametersSpace, "hard_3.ttp", "hard_3-SA", 10, 6_000);
 Console.WriteLine("SA DONE - HARD 3");
 
-RunTsParameterSpaceOverwiew(tsParametersSpace, "hard_3.ttp", "hard_3-TS", 10, 10_000);
+RunTsParameterSpaceOverwiew(tsParametersSpace, "hard_3.ttp", "hard_3-TS", 10, 6_000);
 Console.WriteLine("TS DONE - HARD ");
 
-RunEaParameterSpaceOverwiew(gaParametersSpace, "hard_3.ttp", "hard_3-GA", 10, 3_000);
+RunEaParameterSpaceOverwiew(gaParametersSpace, "hard_3.ttp", "hard_3-GA", 10, 1_000);
 Console.WriteLine("GA DONE - HARD");
 
 // ================================================

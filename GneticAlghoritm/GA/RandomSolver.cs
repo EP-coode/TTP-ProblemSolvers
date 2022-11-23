@@ -9,7 +9,7 @@ namespace GeneticAlghoritm.GA;
 
 internal class RandomSolver : ProblemSlover
 {
-    public RandomSolver(int[] populationGenes, IEvaluator evaluator, int populationSize) : base(populationGenes, evaluator, populationSize)
+    public RandomSolver(int[] populationGenes, IEvaluator evaluator, int populationSize) : base(populationGenes, evaluator, 1)
     {
     }
 
@@ -21,7 +21,7 @@ internal class RandomSolver : ProblemSlover
             //SaveStatsToLog();
             foreach(var individual in Population)
             {
-                logger.Log(new string[] { individual.Value.ToString() });
+                logger?.Log(new string[] { individual.Value.ToString() });
             }
             Individual generationBestIndividual = GetBestIndividualOfGeneration();
             if(BestIndividual is null || generationBestIndividual.Value > BestIndividual.Value)

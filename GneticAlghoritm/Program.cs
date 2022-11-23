@@ -18,8 +18,11 @@ using GneticAlghoritm.SA;
 using System.Runtime.Intrinsics.X86;
 using System.Collections.Concurrent;
 using GneticAlghoritm.GA.Mutation;
+using System;
 
 Console.WriteLine("HELLO");
+
+Random r = new Random();
 
 var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
 
@@ -75,31 +78,29 @@ void RunExperiment(Experiment e)
     var problem = new TravelingThiefProblem();
     problem.LoadFromFile($".\\lab1\\dane\\{e.FileName}");
     IEvaluator evaluator = new TTPEvaluator(problem, greedyItemsSelector);
-    List<ProblemSlover> problemSolvers = new();
+    Individual[] best = new Individual[e.Repeats];
+    List<int> experimentIds = Enumerable.Range(0, e.Repeats).ToList();
+    CsvFileLogger logger2 = new CsvFileLogger();
+    logger2.SetFileDest(Path.Combine(desktopLocation, e.Name, $"best_of_best.csv"), new string[] { "value" });
+    int[] avaligbleGens = problem.GetGens();
 
-
-    for (int i = 0; i < e.Repeats; i++)
+    Parallel.ForEach(experimentIds, experimentId =>
     {
         CsvFileLogger logger = new CsvFileLogger();
-        logger.SetFileDest(Path.Combine(desktopLocation, e.Name, $"{i}_pop-{e.PopSize}_mut-{e.MutationStrategy}_{e.MutationTreshold}_cross-{e.CrossingStrategy}_{e.CrossingTreshold}_selection-{e.SelctionStrategy}.csv"), new string[] { "min", "max", "avg" });
-        int[] avalibleGens = problem.GetGens();
-        ProblemSlover gaSolver = new GeneticAlghoritm.GA.GeneticAlghoritm(avalibleGens,
-            e.PopSize, e.MutationTreshold, e.CrossingTreshold, evaluator, e.MutationStrategy, e.CrossingStrategy, e.SelctionStrategy)
+        logger.SetFileDest(Path.Combine(desktopLocation, e.Name, $"{experimentId}_pop-{e.PopSize}_mut-{e.MutationStrategy}_{e.MutationTreshold}_cross-{e.CrossingStrategy}_{e.CrossingTreshold}_selection-{e.SelctionStrategy}.csv"), new string[] { "min", "max", "avg" });
+
+
+        ProblemSlover gaSolver = new GeneticAlghoritm.GA.GeneticAlghoritm(avaligbleGens,
+           e.PopSize, e.MutationTreshold, e.CrossingTreshold, evaluator, e.MutationStrategy, e.CrossingStrategy, e.SelctionStrategy)
         {
             logger = logger,
         };
-        gaSolver.Run(e.PopSize);
+        gaSolver.Run(2000);
         logger.Flush();
-        problemSolvers.Add(gaSolver);
-        Console.WriteLine("Task: " + e.Name + $" {i}/{e.Repeats} done");
-    }
 
-    CsvFileLogger logger2 = new CsvFileLogger();
-    logger2.SetFileDest(Path.Combine(desktopLocation, e.Name, "best_of_the_bast.csv"), new string[] { "values" });
-    foreach (var problemSolver in problemSolvers)
-    {
-        logger2.Log(new string[] { problemSolver.BestIndividual.Value.ToString() });
-    };
+        logger2.Log(new string[] { $"{gaSolver.BestIndividual.Value}" });
+    });
+
     logger2.Flush();
 }
 
@@ -166,7 +167,7 @@ void RunTsExperiment(TS_Experiment e)
             logger = logger
         };
 
-        tsSolver.Run(5_000);
+        tsSolver.Run(6_000);
         logger.Flush();
         logger2.Log(new string[] { $"{tsSolver.BestIndividual.Value}" });
     });
@@ -233,8 +234,7 @@ void RunSaExperiment(SA_Experiment e)
     IEvaluator evaluator = new TTPEvaluator(problem, greedyItemsSelector);
     int[] avalibleGens = problem.GetGens();
     CsvFileLogger logger2 = new CsvFileLogger();
-
-    logger2.SetFileDest(Path.Combine(desktopLocation, e.ExperimentName, $"summary_n-size_{e.NeightbourhoodSize}_start-t_{e.InitialTemperature}_min-t_{e.MinTemperature}_{e.CoolingStrategy}.csv"), new string[] { "best_value_in_run" });
+    logger2.SetFileDest(Path.Combine(desktopLocation, e.ExperimentName, $"summary.csv"), new string[] { "best_value_in_run" });
 
     Individual[] best = new Individual[e.repeats];
     List<int> experimentIds = Enumerable.Range(0, e.repeats).ToList();
@@ -243,7 +243,7 @@ void RunSaExperiment(SA_Experiment e)
     {
         CsvFileLogger logger = new CsvFileLogger();
         //$"{experimentId}_n-size_{e.NeightbourhoodSize}_start-t_{e.InitialTemperature}_min-t_{e.MinTemperature}_{e.CoolingStrategy}.csv"
-        logger.SetFileDest(Path.Combine(desktopLocation, e.ExperimentName, $"test.csv"), new string[] { "current", "best", "temperature" });
+        logger.SetFileDest(Path.Combine(desktopLocation, e.ExperimentName, $"{experimentId}_n-size_{e.NeightbourhoodSize}_start-t_{e.InitialTemperature}_min-t_{e.MinTemperature}_{e.CoolingStrategy}.csv"), new string[] { "current", "best", "temperature" });
 
 
         var tsSolver = new SimulatedAnnealing(avalibleGens, evaluator, e.NeighbourGenerator, e.NeightbourhoodSize, e.InitialTemperature, e.MinTemperature, e.CoolingStrategy)
@@ -251,8 +251,9 @@ void RunSaExperiment(SA_Experiment e)
             logger = logger
         };
 
-        tsSolver.Run(5_000);
+        tsSolver.Run(40_000);
         logger.Flush();
+
         logger2.Log(new string[] { $"{tsSolver.BestIndividual.Value}" });
     });
 
@@ -313,8 +314,8 @@ void RunSaParameterSpaceOverwiew(SaParameterSpace parametersSpace, string proble
 
 var saParametersSpace = new SaParameterSpace()
 {
-    InitialTemperature = Enumerable.Range(1, 250).Select(x => x * 200d), // od 100 do 50_000; krok 200
-    MinTemperature = new List<double>() { 10 },
+    InitialTemperature = Enumerable.Range(1, 100).Select(x => x * 10d), // od 100 do 50_000; krok 200
+    MinTemperature = new List<double>() { 0 },
     CoolingStrategy = Enumerable.Range(0, 1000).Select(x => new ExponentialCooling(x * 0.0001)), // 0.0001 do 0.1
 };
 
@@ -327,14 +328,57 @@ var tsParametersSpace = new TsParametersSpace()
 
 var gaParametersSpace = new EaParamsSpace()
 {
-    PopSize = Enumerable.Range(1, 15).Select(x => x * 30), // od 10 do 1000; krok 20
+    PopSize = new List<int>() { 10, 30, 50, 100 }, // od 10 do 1000; krok 20
     CrossingTreshold = Enumerable.Range(0, 20).Select(x => x * 0.05), // 0 do 1; krok 0,05
-    MutationTreshold = Enumerable.Range(0, 20).Select(x => x * 0.05), // 0 do 1; krok 0,05
-    SelctionStrategy = Enumerable.Range(0, 20).Select(x => (ISelector)new Tournament(x * 0.05)), //  0 do 0.5; krok 0,01
-        //.Union(Enumerable.Range(2, 7).Select(x => (ISelector)new Roulette(x))),
+    MutationTreshold = Enumerable.Range(1, 20).Select(x => x * 0.05), // 0 do 1; krok 0,05
+    SelctionStrategy = Enumerable.Range(0, 10).Select(x => (ISelector)new Tournament(x * 0.03)),
+    //.Union(Enumerable.Range(2, 7).Select(x => (ISelector)new Roulette(x))),
     CrossingStrategy = new List<ICrossingStrategy>() { new OrderedCrossover() },
     MutationStrategy = new List<IMutationStrategy>() { new SwapCountMutation(1) },
 };
+
+void RunRandomSolver(string problemName)
+{
+    var problem = new TravelingThiefProblem();
+    problem.LoadFromFile($".\\lab1\\dane\\{problemName}");
+    IEvaluator evaluator = new TTPEvaluator(problem, greedyItemsSelector);
+    int[] avalibleGens = problem.GetGens();
+
+    CsvFileLogger logger = new CsvFileLogger();
+    logger.SetFileDest(Path.Combine(desktopLocation, $"random_{problemName}.csv"), new string[] { "value" });
+
+
+    for (int i = 0; i < 10_000; i++)
+    {
+        var shuffledCities = problem.Cities.OrderBy(x => r.Next()).Select(c => c.Index).ToArray();
+        Individual individual = new Individual(shuffledCities, evaluator, false);
+        logger.Log(new string[] { individual.Value.ToString() });
+
+    }
+
+
+    logger.Flush();
+}
+
+void RunGreedySolver(string problemName)
+{
+    var problem = new TravelingThiefProblem();
+    problem.LoadFromFile($".\\lab1\\dane\\{problemName}");
+    IEvaluator evaluator = new TTPEvaluator(problem, greedyItemsSelector);
+    int[] avalibleGens = problem.GetGens();
+
+    CsvFileLogger logger = new CsvFileLogger();
+    logger.SetFileDest(Path.Combine(desktopLocation, $"greedy_{problemName}.csv"), new string[] { "value" });
+
+    Parallel.ForEach(Enumerable.Range(0, 10_000), i =>
+    {
+        var shuffledCities = problem.Cities.OrderBy(x => r.Next()).ToArray();
+        var bst = GreedyCityPathPicker.GetBestIndividual(null, evaluator, shuffledCities);
+        logger.Log(new string[] { bst.Value.ToString() });
+    });
+
+    logger.Flush();
+}
 
 //RunSaParameterSpaceOverwiew(saParametersSpace, "easy_0.ttp", "easy_0-SA", 10, 5_000);
 //Console.WriteLine("SA DONE");
@@ -342,89 +386,327 @@ var gaParametersSpace = new EaParamsSpace()
 //RunTsParameterSpaceOverwiew(tsParametersSpace, "easy_0.ttp", "easy_0-TS", 10, 5_000);
 //Console.WriteLine("TS DONE");
 
-RunEaParameterSpaceOverwiew(gaParametersSpace, "easy_0.ttp", "easy_0-GA", 10, 400);
-Console.WriteLine("GA DONE");
+//RunEaParameterSpaceOverwiew(gaParametersSpace, "easy_0.ttp", "easy_0-GA-DEBUG", 10, 400);
+//Console.WriteLine("GA DONE");
+
+//================================================
+
+//RunSaParameterSpaceOverwiew(saParametersSpace, "medium_0.ttp", "medium_0-SA", 10, 3_000);
+//Console.WriteLine("SA DONE - MED 0");
+
+//RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_0.ttp", "medium_0-TS", 10, 3_000);
+//Console.WriteLine("TS DONE - MED 0");
+
+//RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_0.ttp", "medium_0-GA", 10, 400);
+//Console.WriteLine("GA DONE - MED 0");
 
 // ================================================
 
-RunSaParameterSpaceOverwiew(saParametersSpace, "medium_0.ttp", "medium_0-SA", 10, 3_000);
-Console.WriteLine("SA DONE - MED 0");
+//RunSaParameterSpaceOverwiew(saParametersSpace, "medium_1.ttp", "medium_1-SA", 10, 3_000);
+//Console.WriteLine("SA DONE - MED 1");
 
-RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_0.ttp", "medium_0-TS", 10, 3_000);
-Console.WriteLine("TS DONE - MED 0");
+//RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_1.ttp", "medium_1-TS", 10, 3_000);
+//Console.WriteLine("TS DONE - MED 1");
 
-RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_0.ttp", "medium_0-GA", 10, 400);
-Console.WriteLine("GA DONE - MED 0");
+//RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_1.ttp", "medium_1-GA", 10, 400);
+//Console.WriteLine("GA DONE - MED 1");
 
-// ================================================
+//// ================================================
 
-RunSaParameterSpaceOverwiew(saParametersSpace, "medium_1.ttp", "medium_1-SA", 10, 3_000);
-Console.WriteLine("SA DONE - MED 1");
+//RunSaParameterSpaceOverwiew(saParametersSpace, "medium_2.ttp", "medium_2-SA", 10, 3_000);
+//Console.WriteLine("SA DONE - MED 3");
 
-RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_1.ttp", "medium_1-TS", 10, 3_000);
-Console.WriteLine("TS DONE - MED 1");
+//RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_2.ttp", "medium_2-TS", 10, 3_000);
+//Console.WriteLine("TS DONE - MED 2");
 
-RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_1.ttp", "medium_1-GA", 10, 400);
-Console.WriteLine("GA DONE - MED 1");
+//RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_2.ttp", "medium_2-GA", 10, 400);
+//Console.WriteLine("GA DONE - MED 2");
 
-// ================================================
+////// ================================================
 
-RunSaParameterSpaceOverwiew(saParametersSpace, "medium_2.ttp", "medium_2-SA", 10, 3_000);
-Console.WriteLine("SA DONE - MED 3");
+//RunSaParameterSpaceOverwiew(saParametersSpace, "hard_3.ttp", "hard_3-SA", 10, 6_000);
+//Console.WriteLine("SA DONE - HARD 3");
 
-RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_2.ttp", "medium_2-TS", 10, 3_000);
-Console.WriteLine("TS DONE - MED 2");
+//RunTsParameterSpaceOverwiew(tsParametersSpace, "hard_3.ttp", "hard_3-TS", 10, 6_000);
+//Console.WriteLine("TS DONE - HARD ");
 
-RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_2.ttp", "medium_2-GA", 10, 400);
-Console.WriteLine("GA DONE - MED 2");
+//RunEaParameterSpaceOverwiew(gaParametersSpace, "hard_3.ttp", "hard_3-GA", 10, 1_200);
+//Console.WriteLine("GA DONE - HARD");
 
-// ================================================
+//================================================
 
-RunSaParameterSpaceOverwiew(saParametersSpace, "hard_3.ttp", "hard_3-SA", 10, 6_000);
-Console.WriteLine("SA DONE - HARD 3");
 
-RunTsParameterSpaceOverwiew(tsParametersSpace, "hard_3.ttp", "hard_3-TS", 10, 6_000);
-Console.WriteLine("TS DONE - HARD ");
 
-RunEaParameterSpaceOverwiew(gaParametersSpace, "hard_3.ttp", "hard_3-GA", 10, 1_000);
-Console.WriteLine("GA DONE - HARD");
+//RunRandomSolver("easy_0.ttp");
+//RunRandomSolver("medium_0.ttp");
+//RunRandomSolver("medium_1.ttp");
+//RunRandomSolver("medium_2.ttp");
+//RunRandomSolver("hard_3.ttp");
+//RunRandomSolver("hard_4.ttp");
 
-// ================================================
+
+//RunGreedySolver("easy_0.ttp");
+//RunGreedySolver("medium_0.ttp");
+//RunGreedySolver("medium_1.ttp");
+//RunGreedySolver("medium_2.ttp");
+//RunGreedySolver("hard_3.ttp");
+//RunGreedySolver("hard_4.ttp");
+
+
+//50	SwapCountMutation(1)	0,65	OrderedCrossover	Tournament0,05	0,8	41504,68192	37173,96714	46266,71182	2995,15399
 
 
 //RunTsExperiment(new TS_Experiment()
 //{
-//    dataSet = "easy_4.ttp",
+//    dataSet = "medium_0.ttp",
 //    experimentName = "TEST",
 //    generator = new InverseGenerator(),
-//    neightbourhoodSize = 100,
+//    neightbourhoodSize = 180,
 //    repeats = 1,
-//    tabuSize = 5_000,
+//    tabuSize = 400,
 //});
 
 //RunSaExperiment(new SA_Experiment()
 //{
 //    dataSet = "medium_1.ttp",
-//    ExperimentName = "TEST3",
+//    ExperimentName = "TEST",
 //    CoolingStrategy = new ExponentialCooling(0.001),
-//    InitialTemperature = 10_000,
-//    MinTemperature = -1,
+//    InitialTemperature = 200,
+//    MinTemperature = 10,
 //    NeighbourGenerator = new SwapNeighbourGenerator(1),
 //    NeightbourhoodSize = 1,
-//     repeats = 1,
+//    repeats = 1,
 //});
 
-//RunExperiment(new Experiment() 
+//RunExperiment(new Experiment()
 //{
-//    FileName = "easy_1.ttp",
-//    Name = "TEST",
+//    FileName = "medium_0.ttp",
+//    Name = "OST_OBLICZENIA_med_0",
 //    CrossingStrategy = new OrderedCrossover(),
-//    CrossingTreshold = 0.7,
-//    MutationStrategy = new SwapCountMutation(2),
-//    MutationTreshold = 0.3,
-//    PopSize = 300,
-//    Repeats = 1,
-//    SelctionStrategy = new Tournament(0.03),
+//    CrossingTreshold = 0.8,
+//    MutationStrategy = new SwapCountMutation(1),
+//    MutationTreshold = 0.65,
+//    PopSize = 50,
+//    Repeats = 10,
+//    SelctionStrategy = new Tournament(0.05),
 //});
+
+//RunExperiment(new Experiment()
+//{
+//    FileName = "medium_1.ttp",
+//    Name = "OST_OBLICZENIA_med_1",
+//    CrossingStrategy = new OrderedCrossover(),
+//    CrossingTreshold = 0.8,
+//    MutationStrategy = new SwapCountMutation(1),
+//    MutationTreshold = 0.65,
+//    PopSize = 50,
+//    Repeats = 10,
+//    SelctionStrategy = new Tournament(0.05),
+//});
+
+//RunExperiment(new Experiment()
+//{
+//    FileName = "medium_2.ttp",
+//    Name = "OST_OBLICZENIA_med_2",
+//    CrossingStrategy = new OrderedCrossover(),
+//    CrossingTreshold = 0.8,
+//    MutationStrategy = new SwapCountMutation(1),
+//    MutationTreshold = 0.65,
+//    PopSize = 50,
+//    Repeats = 10,
+//    SelctionStrategy = new Tournament(0.05),
+//});
+
+
+//RunExperiment(new Experiment()
+//{
+//    FileName = "medium_1.ttp",
+//    Name = "OST_OBLICZENIA_hard_3",
+//    CrossingStrategy = new OrderedCrossover(),
+//    CrossingTreshold = 0.8,
+//    MutationStrategy = new SwapCountMutation(1),
+//    MutationTreshold = 0.65,
+//    PopSize = 50,
+//    Repeats = 10,
+//    SelctionStrategy = new Tournament(0.05),
+//});
+
+
+//RunExperiment(new Experiment()
+//{
+//    FileName = "hard_3.ttp",
+//    Name = "OST_OBLICZENIA_hard_3",
+//    CrossingStrategy = new OrderedCrossover(),
+//    CrossingTreshold = 0.8,
+//    MutationStrategy = new SwapCountMutation(1),
+//    MutationTreshold = 0.65,
+//    PopSize = 50,
+//    Repeats = 10,
+//    SelctionStrategy = new Tournament(0.05),
+//});
+//;
+
+//RunExperiment(new Experiment()
+//{
+//    FileName = "hard_4.ttp",
+//    Name = "OST_OBLICZENIA_hard_4",
+//    CrossingStrategy = new OrderedCrossover(),
+//    CrossingTreshold = 0.8,
+//    MutationStrategy = new SwapCountMutation(1),
+//    MutationTreshold = 0.65,
+//    PopSize = 50,
+//    Repeats = 10,
+//    SelctionStrategy = new Tournament(0.05),
+//});
+//;
+
+//RunSaExperiment(new SA_Experiment()
+//{
+//    dataSet = "easy_0.ttp",
+//    ExperimentName = "SA_EASY_0",
+//    CoolingStrategy = new ExponentialCooling(0.001),
+//    InitialTemperature = 200,
+//    MinTemperature = 0,
+//    NeighbourGenerator = new SwapNeighbourGenerator(1),
+//    NeightbourhoodSize = 1,
+//    repeats = 10,
+//});
+
+//RunSaExperiment(new SA_Experiment()
+//{
+//    dataSet = "medium_0.ttp",
+//    ExperimentName = "SA_MED_0",
+//    CoolingStrategy = new ExponentialCooling(0.001),
+//    InitialTemperature = 200,
+//    MinTemperature = 0,
+//    NeighbourGenerator = new SwapNeighbourGenerator(1),
+//    NeightbourhoodSize = 1,
+//    repeats = 10,
+//});
+
+//RunSaExperiment(new SA_Experiment()
+//{
+//    dataSet = "medium_1.ttp",
+//    ExperimentName = "SA_MED_1",
+//    CoolingStrategy = new ExponentialCooling(0.001),
+//    InitialTemperature = 200,
+//    MinTemperature = 0,
+//    NeighbourGenerator = new SwapNeighbourGenerator(1),
+//    NeightbourhoodSize = 1,
+//    repeats = 10,
+//});
+
+//RunSaExperiment(new SA_Experiment()
+//{
+//    dataSet = "medium_2.ttp",
+//    ExperimentName = "SA_MED_2",
+//    CoolingStrategy = new ExponentialCooling(0.001),
+//    InitialTemperature = 200,
+//    MinTemperature = 0,
+//    NeighbourGenerator = new SwapNeighbourGenerator(1),
+//    NeightbourhoodSize = 1,
+//    repeats = 10,
+//});
+
+RunSaExperiment(new SA_Experiment()
+{
+    dataSet = "hard_3.ttp",
+    ExperimentName = "SA_HARD_3",
+    CoolingStrategy = new ExponentialCooling(0.001),
+    InitialTemperature = 200,
+    MinTemperature = 0,
+    NeighbourGenerator = new SwapNeighbourGenerator(1),
+    NeightbourhoodSize = 1,
+    repeats = 10,
+});
+
+//RunSaExperiment(new SA_Experiment()
+//{
+//    dataSet = "hard_4.ttp",
+//    ExperimentName = "SA_HARD_4",
+//    CoolingStrategy = new ExponentialCooling(0.001),
+//    InitialTemperature = 200,
+//    MinTemperature = 0,
+//    NeighbourGenerator = new SwapNeighbourGenerator(1),
+//    NeightbourhoodSize = 1,
+//    repeats = 10,
+//});
+
+
+//RunSaExperiment(new SA_Experiment()
+//{
+//    dataSet = "easy_0.ttp",
+//    ExperimentName = "SA_EASY_0",
+//    CoolingStrategy = new ExponentialCooling(0.001),
+//    InitialTemperature = 200,
+//    MinTemperature = 0,
+//    NeighbourGenerator = new SwapNeighbourGenerator(1),
+//    NeightbourhoodSize = 1,
+//    repeats = 10,
+//});
+
+RunTsExperiment(new TS_Experiment()
+{
+    dataSet = "easy_0.ttp",
+    experimentName = "OST_EASY_0",
+    generator = new InverseGenerator(),
+    neightbourhoodSize = 160,
+    repeats = 10,
+    tabuSize = 2000,
+});
+
+RunTsExperiment(new TS_Experiment()
+{
+    dataSet = "medium_0.ttp",
+    experimentName = "OST_MED_0",
+    generator = new InverseGenerator(),
+    neightbourhoodSize = 160,
+    repeats = 10,
+    tabuSize = 2000,
+});
+
+RunTsExperiment(new TS_Experiment()
+{
+    dataSet = "medium_1.ttp",
+    experimentName = "OST_MED_1",
+    generator = new InverseGenerator(),
+    neightbourhoodSize = 160,
+    repeats = 10,
+    tabuSize = 2000,
+});
+
+RunTsExperiment(new TS_Experiment()
+{
+    dataSet = "medium_2.ttp",
+    experimentName = "OST_MED_2",
+    generator = new InverseGenerator(),
+    neightbourhoodSize = 160,
+    repeats = 10,
+    tabuSize = 2000,
+});
+
+RunTsExperiment(new TS_Experiment()
+{
+    dataSet = "hard_3.ttp",
+    experimentName = "OST_HARD_3",
+    generator = new InverseGenerator(),
+    neightbourhoodSize = 160,
+    repeats = 10,
+    tabuSize = 2000,
+});
+
+RunTsExperiment(new TS_Experiment()
+{
+    dataSet = "hard_4.ttp",
+    experimentName = "OST_HARD_4",
+    generator = new InverseGenerator(),
+    neightbourhoodSize = 160,
+    repeats = 10,
+    tabuSize = 2000,
+});
+
+
+
+
 
 Console.WriteLine("DONE");

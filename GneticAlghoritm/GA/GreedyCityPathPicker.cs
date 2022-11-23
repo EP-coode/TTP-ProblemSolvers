@@ -12,36 +12,52 @@ namespace GneticAlghoritm.GA;
 
 internal class GreedyCityPathPicker
 {
-    public static Individual? GetBestIndividual(CsvFileLogger logger, TravelingThiefProblem ttp)
+    public static Individual? GetBestIndividual(CsvFileLogger? logger, IEvaluator ev, City[] cities)
     {
         // very bad
         GreedyItemsSelector itemsSelector = new GreedyItemsSelector();
-        Individual? bstIndividual = null;
-        IEvaluator ev = new TTPEvaluator(ttp, itemsSelector);
+        Individual init = new Individual(cities.Select(c => c.Index).ToArray(), ev, false);
+        Individual? bestIndividual = init;
 
-        for (int i = 0; i < ttp.Cities.Length; i++)
+        // dla każdego miasta jako początkowe
+        for (int i = 0; i < 1; i++)
         {
-            int[] citiesOrder = new int[ttp.Cities.Length];
+            Individual? currentIndividual = null;
+            // ustaw jako początkowe 
+            int[] citiesOrder = new int[cities.Length];
             citiesOrder[0] = i;
-            var startingCity = ttp.Cities[i];
+            var startingCity = cities[i];
             var currentCity = startingCity;
-            var unvisitedCities = ttp.Cities.Where((city) => city != startingCity).ToList();
 
-            for (int j = 1; j < ttp.Cities.Length; j++)
+            // określ nieodwiedzone miasta
+            var unvisitedCities = cities.Where((city) => city != startingCity).ToList();
+
+            // dla dopuki isnieją nieodwiedzone miasta odwiedz je 
+            for (int j = 1; j < cities.Length; j++)
             {
-                var cityDistances = unvisitedCities.Select((city) => (city, TravelingThiefProblem.GetCitiesDistnce(city, currentCity))).OrderBy((i)=>i.Item2).ToArray();
+                // oblicz wszyskie odległości pozostałych miast od obecnego
+                //var cityDistances = unvisitedCities.Select((city) => (city, TravelingThiefProblem.GetCitiesDistnce(city, currentCity))).OrderBy((i)=>i.Item2).ToArray();
+
+                // określ najbliższe miasto 
                 var closestCity = unvisitedCities.MinBy((city) => TravelingThiefProblem.GetCitiesDistnce(city, currentCity));
+
                 citiesOrder[j] = closestCity.Index;
                 unvisitedCities.Remove(closestCity);
                 currentCity = closestCity;
             }
 
             // very bad
-            bstIndividual = new Individual(citiesOrder, ev);
-            logger.Log(new string[] { bstIndividual.Value.ToString() });
+            currentIndividual = new Individual(citiesOrder, ev, shuffleGenome: false);
+
+            if (bestIndividual is null || bestIndividual.Value < currentIndividual.Value)
+            {
+                bestIndividual = currentIndividual;
+            }
+
+            logger?.Log(new string[] { currentIndividual.Value.ToString() });
         }
 
-        return bstIndividual;
+        return bestIndividual;
     }
 }
 

@@ -15,19 +15,24 @@ internal class RandomSolver : ProblemSlover
 
     public override void Run(int generations)
     {
-        for(int i = 0; i < generations; i++)
+        for (int i = 0; i < generations; i++)
         {
-            GenRandomPopulation();
-            //SaveStatsToLog();
-            foreach(var individual in Population)
-            {
-                logger?.Log(new string[] { individual.Value.ToString() });
-            }
-            Individual generationBestIndividual = GetBestIndividualOfGeneration();
-            if(BestIndividual is null || generationBestIndividual.Value > BestIndividual.Value)
-            {
-                BestIndividual = new Individual(generationBestIndividual);
-            }
+            NextGeneration(i);
+        }
+    }
+
+    protected override void NextGeneration(int currentGeneration)
+    {
+        GenRandomPopulation();
+        //SaveStatsToLog();
+        foreach (var individual in Population)
+        {
+            logger?.Log(new string[] { individual.Value.ToString() });
+        }
+        Individual generationBestIndividual = GetBestIndividualOfGeneration();
+        if (BestIndividual is null || generationBestIndividual.Value > BestIndividual.Value)
+        {
+            BestIndividual = new Individual(generationBestIndividual);
         }
     }
 }

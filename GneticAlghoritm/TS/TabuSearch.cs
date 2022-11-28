@@ -30,25 +30,30 @@ public class TabuSearch : ProblemSlover
     {
         for (int i = 0; i < generations; i++)
         {
-            Individual[] neightbours = neighbourGenerator.GetNeighbours(neightbourhoodSize, currentIndividual);
-            Individual bestSuccesor = neightbours.Where(n => !tabuList.Any(t => t.Equals(n))).MaxBy(n => n.Value) ?? currentIndividual;
-
-            logger?.Log(new string[] { $"{currentIndividual.Value}", $"{BestIndividual.Value}", $"{neightbours.Select(n => n.Value).Max()}", $"{neightbours.Select(n => n.Value).Min()}", $"{neightbours.Select(n => n.Value).Average()}" });
-
-            if (bestSuccesor.Value > BestIndividual.Value)
-            {
-                BestIndividual = bestSuccesor;
-            }
-
-            tabuList.Enqueue(bestSuccesor);
-
-            if (tabuList.Count() > tabuSize)
-            {
-                tabuList.Dequeue();
-            }
-
-            currentIndividual = bestSuccesor;
+            NextGeneration(i);
         }
+    }
+
+    protected override void NextGeneration(int currentGeneration)
+    {
+        Individual[] neightbours = neighbourGenerator.GetNeighbours(neightbourhoodSize, currentIndividual);
+        Individual bestSuccesor = neightbours.Where(n => !tabuList.Any(t => t.Equals(n))).MaxBy(n => n.Value) ?? currentIndividual;
+
+        logger?.Log(new string[] { $"{currentIndividual.Value}", $"{BestIndividual.Value}", $"{neightbours.Select(n => n.Value).Max()}", $"{neightbours.Select(n => n.Value).Min()}", $"{neightbours.Select(n => n.Value).Average()}" });
+
+        if (bestSuccesor.Value > BestIndividual.Value)
+        {
+            BestIndividual = bestSuccesor;
+        }
+
+        tabuList.Enqueue(bestSuccesor);
+
+        if (tabuList.Count() > tabuSize)
+        {
+            tabuList.Dequeue();
+        }
+
+        currentIndividual = bestSuccesor;
     }
 }
 

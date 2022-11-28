@@ -14,7 +14,7 @@ namespace GeneticAlghoritm.GA;
 
 public class GeneticAlghoritm : ProblemSlover
 {
-    private double mutationFrequencyTreshold;
+    protected double mutationFrequencyTreshold;
     private double crossingFrequency;
     Random r = new Random();
     public ICrossingStrategy crossingStrategy { get; init; }
@@ -37,68 +37,72 @@ public class GeneticAlghoritm : ProblemSlover
 
         for (int i = 0; i < generations; i++)
         {
-            if (StopPredicates is not null && StopPredicates.Length != 0 && StopPredicates.Any(predicate => predicate.MustStop(this)))
-                return;
-
-            //Console.WriteLine($"Pokolenie {i}");
-            Individual[] nextGeneration = new Individual[Population.Length];
-
-            // reproduction
-            for (int j = 0; j < nextGeneration.Length;)
-            {
-                var p1 = parentSelector.SelectParent(Population);
-                var p2 = parentSelector.SelectParent(Population);
-                bool willCross = r.NextDouble() < crossingFrequency;
-
-                if (willCross)
-                {
-                    var childrens = crossingStrategy.Cross(p1, p2);
-
-                    for (int k = 0; k < childrens.Length && k + j < nextGeneration.Length; k++)
-                    {
-                        nextGeneration[j + k] = childrens[k];
-                    }
-
-                    j += childrens.Length;
-                }
-                else
-                {
-                    nextGeneration[j] = p1;
-                    j++;
-
-                    if (nextGeneration.Length > j)
-                    {
-                        nextGeneration[j] = p2;
-                        j++;
-                    }
-                }
-
-            }
-
-            // mutation
-            for (int j = 0; j < nextGeneration.Length; j++)
-            {
-                bool willMutate = r.NextDouble() < mutationFrequencyTreshold;
-
-                if (willMutate)
-                {
-                    nextGeneration[j] = new Individual(nextGeneration[j]);
-                    mutationStrategy.Mutate(nextGeneration[j]);
-                }
-            }
-
-            Population = nextGeneration;
-
-            var bestOfGen = GetBestIndividualOfGeneration();
-            if (BestIndividual is null || bestOfGen.Value > BestIndividual.Value)
-            {
-                BestIndividual = new Individual(bestOfGen);
-            }
-
-
+            NextGeneration(i);
             SaveStatsToLog();
         }
     }
 
+    protected override void NextGeneration(int generation)
+    {
+        if (StopPredicates is not null && StopPredicates.Length != 0 && StopPredicates.Any(predicate => predicate.MustStop(this)))
+            return;
+
+        //Console.WriteLine($"Pokolenie {i}");
+        Individual[] nextGeneration = new Individual[Population.Length];
+
+        // reproduction
+        for (int j = 0; j < nextGeneration.Length;)
+        {
+            var p1 = parentSelector.SelectParent(Population);
+            var p2 = parentSelector.SelectParent(Population);
+            bool willCross = r.NextDouble() < crossingFrequency;
+
+            if (willCross)
+            {
+                var childrens = crossingStrategy.Cross(p1, p2);
+
+                for (int k = 0; k < childrens.Length && k + j < nextGeneration.Length; k++)
+                {
+                    nextGeneration[j + k] = childrens[k];
+                }
+
+                j += childrens.Length;
+            }
+            else
+            {
+                nextGeneration[j] = p1;
+                j++;
+
+                if (nextGeneration.Length > j)
+                {
+                    nextGeneration[j] = p2;
+                    j++;
+                }
+            }
+
+        }
+
+        // mutation
+        for (int j = 0; j < nextGeneration.Length; j++)
+        {
+            bool willMutate = r.NextDouble() < mutationFrequencyTreshold;
+
+            if (willMutate)
+            {
+                nextGeneration[j] = new Individual(nextGeneration[j]);
+                mutationStrategy.Mutate(nextGeneration[j]);
+            }
+        }
+
+        Population = nextGeneration;
+
+        var bestOfGen = GetBestIndividualOfGeneration();
+        if (BestIndividual is null || bestOfGen.Value > BestIndividual.Value)
+        {
+            BestIndividual = new Individual(bestOfGen);
+        }
+
+
+    }
 }
 

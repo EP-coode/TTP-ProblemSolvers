@@ -15,9 +15,9 @@ public class LinearCooling : ICoolingStrategy
         CoolingStep = coolingStep;
     }
 
-    public double CoolDown(double temperature)
+    public double GetTemperature(int generation, double initialTemperature)
     {
-        return temperature - CoolingStep;
+        return initialTemperature - CoolingStep * generation;
     }
 
     public override string ToString()

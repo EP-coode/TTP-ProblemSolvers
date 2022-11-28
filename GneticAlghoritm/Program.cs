@@ -19,6 +19,7 @@ using System.Runtime.Intrinsics.X86;
 using System.Collections.Concurrent;
 using GneticAlghoritm.GA.Mutation;
 using System;
+using GneticAlghoritm.hybrid;
 
 Console.WriteLine("HELLO");
 
@@ -243,7 +244,7 @@ void RunSaExperiment(SA_Experiment e)
     {
         CsvFileLogger logger = new CsvFileLogger();
         //$"{experimentId}_n-size_{e.NeightbourhoodSize}_start-t_{e.InitialTemperature}_min-t_{e.MinTemperature}_{e.CoolingStrategy}.csv"
-        logger.SetFileDest(Path.Combine(desktopLocation, e.ExperimentName, $"{experimentId}_n-size_{e.NeightbourhoodSize}_start-t_{e.InitialTemperature}_min-t_{e.MinTemperature}_{e.CoolingStrategy}.csv"), new string[] { "current", "best", "temperature" });
+        logger.SetFileDest(Path.Combine(desktopLocation, e.ExperimentName, $"{experimentId}_n-size_{e.NeightbourhoodSize}_start-t_{e.InitialTemperature}_min-t_{e.MinTemperature}_{e.CoolingStrategy}.csv"), new string[] { "current", "best", "initialTemperature" });
 
 
         var tsSolver = new SimulatedAnnealing(avalibleGens, evaluator, e.NeighbourGenerator, e.NeightbourhoodSize, e.InitialTemperature, e.MinTemperature, e.CoolingStrategy)
@@ -380,82 +381,333 @@ void RunGreedySolver(string problemName)
     logger.Flush();
 }
 
-//RunSaParameterSpaceOverwiew(saParametersSpace, "easy_0.ttp", "easy_0-SA", 10, 5_000);
-//Console.WriteLine("SA DONE");
+void RunGaSa(GaSaParams gaSaParams)
+{
+    var problem = new TravelingThiefProblem();
+    problem.LoadFromFile($".\\lab1\\dane\\{gaSaParams.FileName}");
+    IEvaluator evaluator = new TTPEvaluator(problem, greedyItemsSelector);
+    int[] avalibleGens = problem.GetGens();
 
-//RunTsParameterSpaceOverwiew(tsParametersSpace, "easy_0.ttp", "easy_0-TS", 10, 5_000);
-//Console.WriteLine("TS DONE");
+    CsvFileLogger logger = new CsvFileLogger();
+    logger.SetFileDest(Path.Combine(desktopLocation, gaSaParams.Name, $"GaSaParams_summary.csv"), new string[] { "value" });
 
-//RunEaParameterSpaceOverwiew(gaParametersSpace, "easy_0.ttp", "easy_0-GA-DEBUG", 10, 400);
-//Console.WriteLine("GA DONE");
+    Parallel.ForEach(Enumerable.Range(0, gaSaParams.Repeats), i =>
+    {
+        CsvFileLogger logger2 = new CsvFileLogger();
+        logger2.SetFileDest(Path.Combine(desktopLocation, gaSaParams.Name, $"GaSaParams_{i}.csv"), new string[] { "min", "max", "avg" });
 
-//================================================
+        var gaSaSolver = new GaSa(avalibleGens, evaluator, gaSaParams)
+        {
+            logger = logger2,
+        };
 
-//RunSaParameterSpaceOverwiew(saParametersSpace, "medium_0.ttp", "medium_0-SA", 10, 3_000);
-//Console.WriteLine("SA DONE - MED 0");
+        gaSaSolver.Run(2000);
+        logger.Log(new string[] { $"{gaSaSolver.BestIndividual.Value}" });
+        logger2.Flush();
+    });
 
-//RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_0.ttp", "medium_0-TS", 10, 3_000);
-//Console.WriteLine("TS DONE - MED 0");
+    logger.Flush();
+}
 
-//RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_0.ttp", "medium_0-GA", 10, 400);
-//Console.WriteLine("GA DONE - MED 0");
+void RunGaTe(GaTempParams gaTeParams)
+{
+    var problem = new TravelingThiefProblem();
+    problem.LoadFromFile($".\\lab1\\dane\\{gaTeParams.FileName}");
+    IEvaluator evaluator = new TTPEvaluator(problem, greedyItemsSelector);
+    int[] avalibleGens = problem.GetGens();
 
-// ================================================
+    CsvFileLogger logger = new CsvFileLogger();
+    logger.SetFileDest(Path.Combine(desktopLocation, gaTeParams.Name, $"GaTe_summary.csv"), new string[] { "value" });
 
-//RunSaParameterSpaceOverwiew(saParametersSpace, "medium_1.ttp", "medium_1-SA", 10, 3_000);
-//Console.WriteLine("SA DONE - MED 1");
+    Parallel.ForEach(Enumerable.Range(0, gaTeParams.Repeats), i =>
+    {
+        CsvFileLogger logger2 = new CsvFileLogger();
+        logger2.SetFileDest(Path.Combine(desktopLocation, gaTeParams.Name, $"GaTe_{i}.csv"), new string[] { "min", "max", "avg" });
 
-//RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_1.ttp", "medium_1-TS", 10, 3_000);
-//Console.WriteLine("TS DONE - MED 1");
+        var gaSaSolver = new GaTe(avalibleGens,
+           gaTeParams.PopSize, gaTeParams.MutationTreshold, gaTeParams.Cooling, gaTeParams.CrossingTreshold, evaluator, gaTeParams.MutationStrategy,
+           gaTeParams.CrossingStrategy, gaTeParams.SelctionStrategy)
+        {
+            logger = logger2,
+        };
 
-//RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_1.ttp", "medium_1-GA", 10, 400);
-//Console.WriteLine("GA DONE - MED 1");
+        gaSaSolver.Run(2000);
+        logger.Log(new string[] { $"{gaSaSolver.BestIndividual.Value}" });
+        logger2.Flush();
+    });
 
-//// ================================================
+    logger.Flush();
+}
 
-//RunSaParameterSpaceOverwiew(saParametersSpace, "medium_2.ttp", "medium_2-SA", 10, 3_000);
-//Console.WriteLine("SA DONE - MED 3");
+RunGaSa(new GaSaParams()
+{
+    FileName = "medium_0.ttp",
+    Name = "GaSaParams_med_0",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0.65,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    saGroupSize = 5,
+    saIterationsLimit = 500,
+    saRunFrequency = 10,
+});
 
-//RunTsParameterSpaceOverwiew(tsParametersSpace, "medium_2.ttp", "medium_2-TS", 10, 3_000);
-//Console.WriteLine("TS DONE - MED 2");
+RunGaSa(new GaSaParams()
+{
+    FileName = "medium_1.ttp",
+    Name = "GaSaParams_med_1",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0.65,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    saGroupSize = 5,
+    saIterationsLimit = 500,
+    saRunFrequency = 10,
+});
 
-//RunEaParameterSpaceOverwiew(gaParametersSpace, "medium_2.ttp", "medium_2-GA", 10, 400);
-//Console.WriteLine("GA DONE - MED 2");
+RunGaSa(new GaSaParams()
+{
+    FileName = "medium_2.ttp",
+    Name = "GaSaParams_med_2",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0.65,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    saGroupSize = 5,
+    saIterationsLimit = 500,
+    saRunFrequency = 10,
+});
 
-////// ================================================
+RunGaSa(new GaSaParams()
+{
+    FileName = "easy_0.ttp",
+    Name = "GaSaParams_easy_0",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0.65,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    saGroupSize = 5,
+    saIterationsLimit = 500,
+    saRunFrequency = 10,
+});
 
-//RunSaParameterSpaceOverwiew(saParametersSpace, "hard_3.ttp", "hard_3-SA", 10, 6_000);
-//Console.WriteLine("SA DONE - HARD 3");
+RunGaSa(new GaSaParams()
+{
+    FileName = "hard_3.ttp",
+    Name = "GaSaParams_hard_3",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0.65,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    saGroupSize = 5,
+    saIterationsLimit = 500,
+    saRunFrequency = 10,
+});
 
-//RunTsParameterSpaceOverwiew(tsParametersSpace, "hard_3.ttp", "hard_3-TS", 10, 6_000);
-//Console.WriteLine("TS DONE - HARD ");
+RunGaSa(new GaSaParams()
+{
+    FileName = "hard_4.ttp",
+    Name = "GaSaParams_hard_4",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0.65,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    saGroupSize = 5,
+    saIterationsLimit = 500,
+    saRunFrequency = 10,
+});
 
-//RunEaParameterSpaceOverwiew(gaParametersSpace, "hard_3.ttp", "hard_3-GA", 10, 1_200);
-//Console.WriteLine("GA DONE - HARD");
+//===========================
 
-//================================================
+RunGaTe(new GaTempParams()
+{
+    FileName = "easy_0.ttp",
+    Name = "GaTeParams_easy_0",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(-1d / 2000d)
+}); ;
 
+RunGaTe(new GaTempParams()
+{
+    FileName = "easy_0.ttp",
+    Name = "GaTeParams_easy_0_cooling",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 1,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(1d / 2000d)
+});
 
+RunGaTe(new GaTempParams()
+{
+    FileName = "medium_1.ttp",
+    Name = "GaTeParams_med_1",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(-1d / 2000d)
+}); ;
 
-//RunRandomSolver("easy_0.ttp");
-//RunRandomSolver("medium_0.ttp");
-//RunRandomSolver("medium_1.ttp");
-//RunRandomSolver("medium_2.ttp");
-//RunRandomSolver("hard_3.ttp");
-//RunRandomSolver("hard_4.ttp");
+RunGaTe(new GaTempParams()
+{
+    FileName = "medium_1.ttp",
+    Name = "GaTeParams_med_1_cooling",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 1,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(1d / 2000d)
+});
 
+RunGaTe(new GaTempParams()
+{
+    FileName = "medium_0.ttp",
+    Name = "GaTeParams_med_1",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(-1d / 2000d)
+}); ;
 
-//RunGreedySolver("easy_0.ttp");
-//RunGreedySolver("medium_0.ttp");
-//RunGreedySolver("medium_1.ttp");
-//RunGreedySolver("medium_2.ttp");
-//RunGreedySolver("hard_3.ttp");
-//RunGreedySolver("hard_4.ttp");
+RunGaTe(new GaTempParams()
+{
+    FileName = "medium_0.ttp",
+    Name = "GaTeParams_med_0_cooling",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 1,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(1d / 2000d)
+});
 
+RunGaTe(new GaTempParams()
+{
+    FileName = "medium_2.ttp",
+    Name = "GaTeParams_med_2",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(-1d / 2000d)
+}); ;
 
-//50	SwapCountMutation(1)	0,65	OrderedCrossover	Tournament0,05	0,8	41504,68192	37173,96714	46266,71182	2995,15399
+RunGaTe(new GaTempParams()
+{
+    FileName = "medium_2.ttp",
+    Name = "GaTeParams_med_2_cooling",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 1,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(1d / 2000d)
+});
 
+RunGaTe(new GaTempParams()
+{
+    FileName = "hard_3.ttp",
+    Name = "GaTeParams_hard_3",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(-1d / 2000d)
+}); ;
 
+RunGaTe(new GaTempParams()
+{
+    FileName = "hard_3.ttp",
+    Name = "GaTeParams_hard_3_cooling",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 1,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(1d / 2000d)
+});
+
+RunGaTe(new GaTempParams()
+{
+    FileName = "hard_4.ttp",
+    Name = "GaTeParams_hard_3",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(-1d / 2000d)
+}); ;
+
+RunGaTe(new GaTempParams()
+{
+    FileName = "hard_4.ttp",
+    Name = "GaTeParams_hard_4_cooling",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 1,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(1d / 2000d)
+});
+
+//===========================
+
+// Przykłady
 //RunTsExperiment(new TS_Experiment()
 //{
 //    dataSet = "medium_0.ttp",
@@ -481,7 +733,7 @@ void RunGreedySolver(string problemName)
 //RunExperiment(new Experiment()
 //{
 //    FileName = "medium_0.ttp",
-//    Name = "OST_OBLICZENIA_med_0",
+//    Name = "Ga_medium_0",
 //    CrossingStrategy = new OrderedCrossover(),
 //    CrossingTreshold = 0.8,
 //    MutationStrategy = new SwapCountMutation(1),
@@ -490,222 +742,6 @@ void RunGreedySolver(string problemName)
 //    Repeats = 10,
 //    SelctionStrategy = new Tournament(0.05),
 //});
-
-//RunExperiment(new Experiment()
-//{
-//    FileName = "medium_1.ttp",
-//    Name = "OST_OBLICZENIA_med_1",
-//    CrossingStrategy = new OrderedCrossover(),
-//    CrossingTreshold = 0.8,
-//    MutationStrategy = new SwapCountMutation(1),
-//    MutationTreshold = 0.65,
-//    PopSize = 50,
-//    Repeats = 10,
-//    SelctionStrategy = new Tournament(0.05),
-//});
-
-//RunExperiment(new Experiment()
-//{
-//    FileName = "medium_2.ttp",
-//    Name = "OST_OBLICZENIA_med_2",
-//    CrossingStrategy = new OrderedCrossover(),
-//    CrossingTreshold = 0.8,
-//    MutationStrategy = new SwapCountMutation(1),
-//    MutationTreshold = 0.65,
-//    PopSize = 50,
-//    Repeats = 10,
-//    SelctionStrategy = new Tournament(0.05),
-//});
-
-
-//RunExperiment(new Experiment()
-//{
-//    FileName = "medium_1.ttp",
-//    Name = "OST_OBLICZENIA_hard_3",
-//    CrossingStrategy = new OrderedCrossover(),
-//    CrossingTreshold = 0.8,
-//    MutationStrategy = new SwapCountMutation(1),
-//    MutationTreshold = 0.65,
-//    PopSize = 50,
-//    Repeats = 10,
-//    SelctionStrategy = new Tournament(0.05),
-//});
-
-
-//RunExperiment(new Experiment()
-//{
-//    FileName = "hard_3.ttp",
-//    Name = "OST_OBLICZENIA_hard_3",
-//    CrossingStrategy = new OrderedCrossover(),
-//    CrossingTreshold = 0.8,
-//    MutationStrategy = new SwapCountMutation(1),
-//    MutationTreshold = 0.65,
-//    PopSize = 50,
-//    Repeats = 10,
-//    SelctionStrategy = new Tournament(0.05),
-//});
-//;
-
-//RunExperiment(new Experiment()
-//{
-//    FileName = "hard_4.ttp",
-//    Name = "OST_OBLICZENIA_hard_4",
-//    CrossingStrategy = new OrderedCrossover(),
-//    CrossingTreshold = 0.8,
-//    MutationStrategy = new SwapCountMutation(1),
-//    MutationTreshold = 0.65,
-//    PopSize = 50,
-//    Repeats = 10,
-//    SelctionStrategy = new Tournament(0.05),
-//});
-//;
-
-//RunSaExperiment(new SA_Experiment()
-//{
-//    dataSet = "easy_0.ttp",
-//    ExperimentName = "SA_EASY_0",
-//    CoolingStrategy = new ExponentialCooling(0.001),
-//    InitialTemperature = 200,
-//    MinTemperature = 0,
-//    NeighbourGenerator = new SwapNeighbourGenerator(1),
-//    NeightbourhoodSize = 1,
-//    repeats = 10,
-//});
-
-//RunSaExperiment(new SA_Experiment()
-//{
-//    dataSet = "medium_0.ttp",
-//    ExperimentName = "SA_MED_0",
-//    CoolingStrategy = new ExponentialCooling(0.001),
-//    InitialTemperature = 200,
-//    MinTemperature = 0,
-//    NeighbourGenerator = new SwapNeighbourGenerator(1),
-//    NeightbourhoodSize = 1,
-//    repeats = 10,
-//});
-
-//RunSaExperiment(new SA_Experiment()
-//{
-//    dataSet = "medium_1.ttp",
-//    ExperimentName = "SA_MED_1",
-//    CoolingStrategy = new ExponentialCooling(0.001),
-//    InitialTemperature = 200,
-//    MinTemperature = 0,
-//    NeighbourGenerator = new SwapNeighbourGenerator(1),
-//    NeightbourhoodSize = 1,
-//    repeats = 10,
-//});
-
-//RunSaExperiment(new SA_Experiment()
-//{
-//    dataSet = "medium_2.ttp",
-//    ExperimentName = "SA_MED_2",
-//    CoolingStrategy = new ExponentialCooling(0.001),
-//    InitialTemperature = 200,
-//    MinTemperature = 0,
-//    NeighbourGenerator = new SwapNeighbourGenerator(1),
-//    NeightbourhoodSize = 1,
-//    repeats = 10,
-//});
-
-RunSaExperiment(new SA_Experiment()
-{
-    dataSet = "hard_3.ttp",
-    ExperimentName = "SA_HARD_3",
-    CoolingStrategy = new ExponentialCooling(0.001),
-    InitialTemperature = 200,
-    MinTemperature = 0,
-    NeighbourGenerator = new SwapNeighbourGenerator(1),
-    NeightbourhoodSize = 1,
-    repeats = 10,
-});
-
-//RunSaExperiment(new SA_Experiment()
-//{
-//    dataSet = "hard_4.ttp",
-//    ExperimentName = "SA_HARD_4",
-//    CoolingStrategy = new ExponentialCooling(0.001),
-//    InitialTemperature = 200,
-//    MinTemperature = 0,
-//    NeighbourGenerator = new SwapNeighbourGenerator(1),
-//    NeightbourhoodSize = 1,
-//    repeats = 10,
-//});
-
-
-//RunSaExperiment(new SA_Experiment()
-//{
-//    dataSet = "easy_0.ttp",
-//    ExperimentName = "SA_EASY_0",
-//    CoolingStrategy = new ExponentialCooling(0.001),
-//    InitialTemperature = 200,
-//    MinTemperature = 0,
-//    NeighbourGenerator = new SwapNeighbourGenerator(1),
-//    NeightbourhoodSize = 1,
-//    repeats = 10,
-//});
-
-RunTsExperiment(new TS_Experiment()
-{
-    dataSet = "easy_0.ttp",
-    experimentName = "OST_EASY_0",
-    generator = new InverseGenerator(),
-    neightbourhoodSize = 160,
-    repeats = 10,
-    tabuSize = 2000,
-});
-
-RunTsExperiment(new TS_Experiment()
-{
-    dataSet = "medium_0.ttp",
-    experimentName = "OST_MED_0",
-    generator = new InverseGenerator(),
-    neightbourhoodSize = 160,
-    repeats = 10,
-    tabuSize = 2000,
-});
-
-RunTsExperiment(new TS_Experiment()
-{
-    dataSet = "medium_1.ttp",
-    experimentName = "OST_MED_1",
-    generator = new InverseGenerator(),
-    neightbourhoodSize = 160,
-    repeats = 10,
-    tabuSize = 2000,
-});
-
-RunTsExperiment(new TS_Experiment()
-{
-    dataSet = "medium_2.ttp",
-    experimentName = "OST_MED_2",
-    generator = new InverseGenerator(),
-    neightbourhoodSize = 160,
-    repeats = 10,
-    tabuSize = 2000,
-});
-
-RunTsExperiment(new TS_Experiment()
-{
-    dataSet = "hard_3.ttp",
-    experimentName = "OST_HARD_3",
-    generator = new InverseGenerator(),
-    neightbourhoodSize = 160,
-    repeats = 10,
-    tabuSize = 2000,
-});
-
-RunTsExperiment(new TS_Experiment()
-{
-    dataSet = "hard_4.ttp",
-    experimentName = "OST_HARD_4",
-    generator = new InverseGenerator(),
-    neightbourhoodSize = 160,
-    repeats = 10,
-    tabuSize = 2000,
-});
-
-
 
 
 

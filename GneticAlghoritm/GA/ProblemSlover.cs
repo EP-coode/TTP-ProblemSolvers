@@ -10,7 +10,7 @@ public abstract class ProblemSlover
 
     public int PopulationSize { get; private set; }
 
-    private int[] genPool;
+    protected readonly int[] genPool;
     public ILogger? logger { get; init; }
     public IStopPredicate[] StopPredicates { get; init; }
     protected IEvaluator evaluator;
@@ -50,6 +50,8 @@ public abstract class ProblemSlover
     }
 
     public abstract void Run(int generations);
+
+    protected abstract void NextGeneration(int currentGeneration);
 
     public void SaveStatsToLog()
     {

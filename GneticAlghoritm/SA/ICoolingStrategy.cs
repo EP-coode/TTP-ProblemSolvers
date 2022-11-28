@@ -8,6 +8,6 @@ namespace GneticAlghoritm.SA;
 
 public interface ICoolingStrategy
 {
-    public double CoolDown(double temperature);
+    public double GetTemperature(int iteration, double initialTemperature);
 }
 

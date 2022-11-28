@@ -15,9 +15,9 @@ internal class ExponentialCooling : ICoolingStrategy
         CoolingTreshold = coolingTreshold;
     }
 
-    public double CoolDown(double temperature)
+    public double GetTemperature(int generation, double initialTemperature)
     {
-        return temperature * (1 - CoolingTreshold);
+        return initialTemperature * Math.Pow(CoolingTreshold, generation);
     }
 
     public override string ToString()

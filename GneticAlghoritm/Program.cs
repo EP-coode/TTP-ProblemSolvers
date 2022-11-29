@@ -471,22 +471,22 @@ void RunGaTe(GaTempParams gaTeParams)
 //    saRunFrequency = 20,
 //});
 
-RunGaSa(new GaSaParams()
-{
-    FileName = "medium_2.ttp",
-    Name = "GaSaParams_med_2",
-    CrossingStrategy = new OrderedCrossover(),
-    CrossingTreshold = 0.8,
-    MutationStrategy = new SwapCountMutation(1),
-    MutationTreshold = 0.65,
-    PopSize = 50,
-    Repeats = 10,
-    SelctionStrategy = new Tournament(0.05),
-    saGroupSize = 25,
-    saIterationsLimit = 2000,
-    saRunFrequency = 20,
-});
-Console.WriteLine("MED2");
+//RunGaSa(new GaSaParams()
+//{
+//    FileName = "medium_2.ttp",
+//    Name = "GaSaParams_med_2",
+//    CrossingStrategy = new OrderedCrossover(),
+//    CrossingTreshold = 0.8,
+//    MutationStrategy = new SwapCountMutation(1),
+//    MutationTreshold = 0.65,
+//    PopSize = 50,
+//    Repeats = 10,
+//    SelctionStrategy = new Tournament(0.05),
+//    saGroupSize = 25,
+//    saIterationsLimit = 2000,
+//    saRunFrequency = 20,
+//});
+//Console.WriteLine("MED2");
 
 //RunGaSa(new GaSaParams()
 //{
@@ -505,41 +505,41 @@ Console.WriteLine("MED2");
 //});
 
 
-RunGaSa(new GaSaParams()
-{
-    FileName = "hard_3.ttp",
-    Name = "GaSaParams_hard_3",
-    CrossingStrategy = new OrderedCrossover(),
-    CrossingTreshold = 0.8,
-    MutationStrategy = new SwapCountMutation(1),
-    MutationTreshold = 0.65,
-    PopSize = 50,
-    Repeats = 10,
-    SelctionStrategy = new Tournament(0.05),
-    saGroupSize = 25,
-    saIterationsLimit = 2000,
-    saRunFrequency = 20,
-});
+//RunGaSa(new GaSaParams()
+//{
+//    FileName = "hard_3.ttp",
+//    Name = "GaSaParams_hard_3",
+//    CrossingStrategy = new OrderedCrossover(),
+//    CrossingTreshold = 0.8,
+//    MutationStrategy = new SwapCountMutation(1),
+//    MutationTreshold = 0.65,
+//    PopSize = 50,
+//    Repeats = 10,
+//    SelctionStrategy = new Tournament(0.05),
+//    saGroupSize = 25,
+//    saIterationsLimit = 2000,
+//    saRunFrequency = 20,
+//});
 
-Console.WriteLine("HARD3");
+//Console.WriteLine("HARD3");
 
-RunGaSa(new GaSaParams()
-{
-    FileName = "hard_4.ttp",
-    Name = "GaSaParams_hard_4",
-    CrossingStrategy = new OrderedCrossover(),
-    CrossingTreshold = 0.8,
-    MutationStrategy = new SwapCountMutation(1),
-    MutationTreshold = 0.65,
-    PopSize = 50,
-    Repeats = 10,
-    SelctionStrategy = new Tournament(0.05),
-    saGroupSize = 25,
-    saIterationsLimit = 2000,
-    saRunFrequency = 20,
-});
+//RunGaSa(new GaSaParams()
+//{
+//    FileName = "hard_4.ttp",
+//    Name = "GaSaParams_hard_4",
+//    CrossingStrategy = new OrderedCrossover(),
+//    CrossingTreshold = 0.8,
+//    MutationStrategy = new SwapCountMutation(1),
+//    MutationTreshold = 0.65,
+//    PopSize = 50,
+//    Repeats = 10,
+//    SelctionStrategy = new Tournament(0.05),
+//    saGroupSize = 25,
+//    saIterationsLimit = 2000,
+//    saRunFrequency = 50,
+//});
 
-Console.WriteLine("HARD4");
+//Console.WriteLine("HARD4");
 
 //===========================
 
@@ -627,6 +627,21 @@ Console.WriteLine("HARD4");
 //    Cooling = new LinearCooling(1d / 2000d)
 //});
 
+RunGaTe(new GaTempParams()
+{
+    FileName = "medium_0.ttp",
+    Name = "GaTeParams_med_0_cooling",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 1,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(-1d / 2000d)
+});
+Console.WriteLine("AA");
+
 //RunGaTe(new GaTempParams()
 //{
 //    FileName = "medium_2.ttp",
@@ -655,61 +670,61 @@ Console.WriteLine("HARD4");
 //    Cooling = new LinearCooling(1d / 2000d)
 //});
 
-//RunGaTe(new GaTempParams()
-//{
-//    FileName = "hard_3.ttp",
-//    Name = "GaTeParams_hard_3",
-//    CrossingStrategy = new OrderedCrossover(),
-//    CrossingTreshold = 0.8,
-//    MutationStrategy = new SwapCountMutation(1),
-//    MutationTreshold = 0,
-//    PopSize = 50,
-//    Repeats = 10,
-//    SelctionStrategy = new Tournament(0.05),
-//    Cooling = new LinearCooling(-1d / 2000d)
-//}); ;
+RunGaTe(new GaTempParams()
+{
+    FileName = "hard_3.ttp",
+    Name = "GaTeParams_hard_3",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(-1d / 2000d)
+}); ;
 
-//RunGaTe(new GaTempParams()
-//{
-//    FileName = "hard_3.ttp",
-//    Name = "GaTeParams_hard_3_cooling",
-//    CrossingStrategy = new OrderedCrossover(),
-//    CrossingTreshold = 0.8,
-//    MutationStrategy = new SwapCountMutation(1),
-//    MutationTreshold = 1,
-//    PopSize = 50,
-//    Repeats = 10,
-//    SelctionStrategy = new Tournament(0.05),
-//    Cooling = new LinearCooling(1d / 2000d)
-//});
+RunGaTe(new GaTempParams()
+{
+    FileName = "hard_3.ttp",
+    Name = "GaTeParams_hard_3_cooling",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 1,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(1d / 2000d)
+});
 
-//RunGaTe(new GaTempParams()
-//{
-//    FileName = "hard_4.ttp",
-//    Name = "GaTeParams_hard_3",
-//    CrossingStrategy = new OrderedCrossover(),
-//    CrossingTreshold = 0.8,
-//    MutationStrategy = new SwapCountMutation(1),
-//    MutationTreshold = 0,
-//    PopSize = 50,
-//    Repeats = 10,
-//    SelctionStrategy = new Tournament(0.05),
-//    Cooling = new LinearCooling(-1d / 2000d)
-//}); ;
+RunGaTe(new GaTempParams()
+{
+    FileName = "hard_4.ttp",
+    Name = "GaTeParams_hard_3",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(-1d / 2000d)
+}); ;
 
-//RunGaTe(new GaTempParams()
-//{
-//    FileName = "hard_4.ttp",
-//    Name = "GaTeParams_hard_4_cooling",
-//    CrossingStrategy = new OrderedCrossover(),
-//    CrossingTreshold = 0.8,
-//    MutationStrategy = new SwapCountMutation(1),
-//    MutationTreshold = 1,
-//    PopSize = 50,
-//    Repeats = 10,
-//    SelctionStrategy = new Tournament(0.05),
-//    Cooling = new LinearCooling(1d / 2000d)
-//});
+RunGaTe(new GaTempParams()
+{
+    FileName = "hard_4.ttp",
+    Name = "GaTeParams_hard_4_cooling",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 1,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    Cooling = new LinearCooling(1d / 2000d)
+});
 
 //===========================
 
@@ -749,6 +764,21 @@ Console.WriteLine("HARD4");
 //    SelctionStrategy = new Tournament(0.05),
 //});
 
+RunGaSa(new GaSaParams()
+{
+    FileName = "hard_4.ttp",
+    Name = "GaSaParams_hard_4",
+    CrossingStrategy = new OrderedCrossover(),
+    CrossingTreshold = 0.8,
+    MutationStrategy = new SwapCountMutation(1),
+    MutationTreshold = 0.65,
+    PopSize = 50,
+    Repeats = 10,
+    SelctionStrategy = new Tournament(0.05),
+    saGroupSize = 25,
+    saIterationsLimit = 2000,
+    saRunFrequency = 50,
+});
 
 
 Console.WriteLine("DONE");

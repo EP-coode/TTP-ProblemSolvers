@@ -51,7 +51,7 @@ namespace GneticAlghoritm.hybrid
                 foreach (int index in indexesToRun)
                 {
                     Individual subject = Population[index];
-                    ProblemSlover ps = new SimulatedAnnealing(genPool, evaluator, new InverseGenerator(), 1, 200, 10, new ExponentialCooling(0.001), subject);
+                    ProblemSlover ps = new SimulatedAnnealing(genPool, evaluator, new InverseGenerator(), 1, 200, 0, new ExponentialCooling(0.001), subject);
                     ps.Run(saIterationsLimit);
                     Population[index] = ps.BestIndividual;
                 }

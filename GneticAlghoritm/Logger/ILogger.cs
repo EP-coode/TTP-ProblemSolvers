@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ProblemSolvers.Logger;
 
-namespace GeneticAlghoritm.Logger;
+namespace ProblemSolvers.Logger;
 
-public interface ILogger
+
+public interface ILogger<T> where T : ILogable
 {
-    void Log(string[] data);
+    public void Log(T loggable);
 }
-

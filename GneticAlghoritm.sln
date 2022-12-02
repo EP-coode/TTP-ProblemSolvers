@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GneticAlghoritm", "GneticAlghoritm\GneticAlghoritm.csproj", "{84CD9B96-65C4-4F33-8D3B-07D1E00DB549}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProblemSolvers", "GneticAlghoritm\ProblemSolvers.csproj", "{84CD9B96-65C4-4F33-8D3B-07D1E00DB549}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -17,12 +17,12 @@ public class SingleValue : ILogable
 
     public string GetHeader(char separator)
     {
-        return Value.ToString();
+        return "Value";
     }
 
     public string ToString(char separator)
     {
-        return "Value";
+        return Value.ToString();
     }
 }
 

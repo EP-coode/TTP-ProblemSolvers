@@ -13,11 +13,12 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvers.ProblemSolvers.SA;
 
-public class SimulatedAnnealing : ProblemSlover<CurrentBestTemp>
+public class SimulatedAnnealing : ProblemSlover<SaLog>
 {
     private INeighbourGenerator neighbourGenerator;
     private int neightbourhoodSize;
     private double initialTemperature;
+    private double currentTemperature;
     private double minTemperature;
     private PermutationIndividual currentIndividual;
     private Random random = new Random();
@@ -31,8 +32,9 @@ public class SimulatedAnnealing : ProblemSlover<CurrentBestTemp>
     public SimulatedAnnealing(SaParams saParams, PermutationIndividual startingIndividual, int[] populationGenes, IEvaluator evaluator) : base(saParams, populationGenes, evaluator)
     {
         neighbourGenerator = saParams.neighbourGenerator;
-        neightbourhoodSize = 0;
+        neightbourhoodSize = 1;
         initialTemperature = saParams.InitialTemperature;
+        currentTemperature = initialTemperature;
         minTemperature = saParams.MinTemperature;
         currentIndividual = startingIndividual;
         BestIndividual = new PermutationIndividual(currentIndividual);
@@ -41,7 +43,7 @@ public class SimulatedAnnealing : ProblemSlover<CurrentBestTemp>
 
     public override void Run(int generations)
     {
-        logger?.Log(new CurrentBestTemp(BestIndividual.Value, currentIndividual.Value, initialTemperature));
+        logger?.Log(new SaLog(BestIndividual.Value, currentIndividual.Value, initialTemperature));
 
         for (int i = 0; i < generations; i++)
         {
@@ -64,7 +66,7 @@ public class SimulatedAnnealing : ProblemSlover<CurrentBestTemp>
             return true;
         }
 
-        double acceptProb = Math.Exp(deltaFit / initialTemperature);
+        double acceptProb = Math.Exp(deltaFit / currentTemperature);
         bool accept = random.NextDouble() < acceptProb;
         return accept;
     }
@@ -85,10 +87,10 @@ public class SimulatedAnnealing : ProblemSlover<CurrentBestTemp>
             }
         }
 
-        var temperature = coolingStrategy.GetTemperature(currentGeneration, initialTemperature);
+        currentTemperature = coolingStrategy.GetTemperature(currentGeneration, initialTemperature);
 
 
-        logger?.Log(new CurrentBestTemp(BestIndividual.Value, currentIndividual.Value, temperature));
+        logger?.Log(new SaLog(BestIndividual.Value, currentIndividual.Value, currentTemperature));
     }
 }
 

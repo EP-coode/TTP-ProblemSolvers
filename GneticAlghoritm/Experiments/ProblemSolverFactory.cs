@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ProblemSolvers.ProblemSolvers.GA;
+using ProblemSolvers.ProblemSolvers.SA;
 
 namespace ProblemSolvers.Experiments;
 
@@ -30,19 +31,13 @@ public class GaSolverFactory : ProblemSolverFactory<GeneticAlghoritm, GaParams, 
     }
 }
 
-//public class TsSolverFactory : ProblemSolverFactory<TabuSearch, TsParams>
-//{
-//    public override TabuSearch GetProblemSolver(TsParams solverParams)
-//    {
-//        return new TabuSearch(solverParams);
-//    }
-//}
-
-//public class SaSolverFactory : ProblemSolverFactory<ProblemSolvers.ProblemSolvers.ProblemSolvers, GaParams>
-//{
-//    public override ProblemSolvers.ProblemSolvers.ProblemSolvers GetProblemSolver(GaParams solverParams)
-//    {
-//        return new ProblemSolvers.ProblemSolvers.ProblemSolvers(solverParams);
-//    }
-//}
-
+public class SaSolverFactory : ProblemSolverFactory<SimulatedAnnealing, SaParams, SaLog>
+{
+    public override SimulatedAnnealing GetProblemSolver(SaParams solverParams, int[] avalibleGens, IEvaluator evaluator, ILogger<SaLog> logger)
+    {
+        return new SimulatedAnnealing(solverParams, avalibleGens, evaluator)
+        {
+            logger = logger
+        };
+    }
+}

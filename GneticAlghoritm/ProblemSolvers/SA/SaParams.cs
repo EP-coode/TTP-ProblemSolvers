@@ -28,7 +28,6 @@ public record SaParams : ProblemSolverParams
     }
 
     public SaParams(ICoolingStrategy coolingStrategy,
-               int neighbourSize,
                double initialTemperature,
                double minTemperature,
                INeighbourGenerator neighbourGenerator,

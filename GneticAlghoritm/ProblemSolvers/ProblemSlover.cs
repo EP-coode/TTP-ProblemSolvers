@@ -41,7 +41,11 @@ public abstract class ProblemSlover<L> where L : ILogable
 
     public void UpdateBestIndividual()
     {
+
         var bestOfGen = GetBestIndividualOfGeneration();
+
+        if (bestOfGen == null) return;
+
         if (BestIndividual is null || bestOfGen.Value > BestIndividual.Value)
         {
             BestIndividual = new PermutationIndividual(bestOfGen);
